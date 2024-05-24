@@ -44,6 +44,7 @@
       const tankDx = 3;
       const cannonAngleDIF = Math.PI / 60;
       const cannonLength = tankWidth * Math.sqrt(2);
+      const initialHealth = 100;
 
       // Player 1
       let tank1X = 0;
@@ -52,26 +53,22 @@
       let cannon1Angle = Math.PI / 4;
       let tank1LeftPressed = false;
       let tank1RightPressed = false;
+      let player1Health = initialHealth;
 
       // Player 2
       let tank2X = width - tankWidth;
       let tank2CenterX;
       let tank2CenterY;
-      let cannon2Angle = Math.PI / 4;
+      let cannon2Angle = (3 * Math.PI) / 4;
       let tank2LeftPressed = false;
       let tank2RightPressed = false;
-
-      const targetWidth = Math.floor(Math.random() * 150 + 30);
-      const targetHeight = Math.floor(Math.random() * 100 + 10);
-      const targetX = Math.floor(Math.random() * (500 - targetWidth) + 500);
-      const targetY = height - targetHeight;
+      let player2Health = initialHealth;
 
       let missileRadius = 5;
       let missileX;
       let missileY;
       let isCharging = false;
       let isFired = false;
-      let isHitted = false;
       let gauge = Math.PI;
       const gaugeDIF = Math.PI / 60;
       const gaugeBarRadius = 30;
@@ -113,7 +110,7 @@
         }
 
         if (!isFired) {
-          if (currentPlayer == 1) {
+          if (currentPlayer === 1) {
             missileX = tank1CenterX + cannonLength * Math.cos(cannon1Angle);
             missileY = tank1CenterY - cannonLength * Math.sin(cannon1Angle);
           } else {
@@ -126,12 +123,23 @@
           missileY = missileY - missileDy;
         }
         checkMissile();
-        drawTank(tank1X, tank1CenterX, tank1CenterY, cannon1Angle, "Player 1");
-        drawTank(tank2X, tank2CenterX, tank2CenterY, cannon2Angle, "Player 2");
-        if (!isHitted) {
-          drawTarget();
-          drawMissile();
-        }
+        drawTank(
+          tank1X,
+          tank1CenterX,
+          tank1CenterY,
+          cannon1Angle,
+          "Player 1",
+          player1Health
+        );
+        drawTank(
+          tank2X,
+          tank2CenterX,
+          tank2CenterY,
+          cannon2Angle,
+          "Player 2",
+          player2Health
+        );
+        drawMissile();
       };
 
       const checkMissile = () => {
@@ -140,23 +148,49 @@
           isFired = false;
           switchPlayer();
         }
-        // target 명중
+
+        // Player 1 명중
         if (
-          missileX >= targetX &&
-          missileX <= targetX + targetWidth &&
-          missileY >= targetY
+          currentPlayer === 2 &&
+          missileX >= tank1X &&
+          missileX <= tank1X + tankWidth &&
+          missileY >= height - tankHeight
         ) {
-          isHitted = true;
-          clearInterval(intervalId);
-          if (confirm("명중입니다. 다시 하시겠습니까?")) {
+          player1Health -= 20;
+          isFired = false;
+          if (player1Health <= 0) {
+            clearInterval(intervalId);
+            alert("Player 2 wins!");
             location.reload();
+          } else {
+            switchPlayer();
+          }
+        }
+
+        // Player 2 명중
+        if (
+          currentPlayer === 1 &&
+          missileX >= tank2X &&
+          missileX <= tank2X + tankWidth &&
+          missileY >= height - tankHeight
+        ) {
+          player2Health -= 20;
+          isFired = false;
+          if (player2Health <= 0) {
+            clearInterval(intervalId);
+            alert("Player 1 wins!");
+            location.reload();
+          } else {
+            switchPlayer();
           }
         }
       };
 
       const switchPlayer = () => {
-        currentPlayer = currentPlayer == 1 ? 2 : 1;
+        currentPlayer = currentPlayer === 1 ? 2 : 1;
         isFired = false;
+        isCharging = false;
+        gauge = Math.PI;
       };
 
       const drawMissile = () => {
@@ -168,9 +202,9 @@
       };
 
       const drawGausing = () => {
-        let centerX = currentPlayer == 1 ? tank1CenterX : tank2CenterX;
+        let centerX = currentPlayer === 1 ? tank1CenterX : tank2CenterX;
         let centerY =
-          currentPlayer == 1
+          currentPlayer === 1
             ? tank1CenterY - cannonLength
             : tank2CenterY - cannonLength;
         ctx.beginPath();
@@ -183,7 +217,8 @@
         tankCenterX,
         tankCenterY,
         cannonAngle,
-        player
+        player,
+        health
       ) => {
         ctx.lineWidth = 5;
         ctx.lineCap = "round";
@@ -203,41 +238,36 @@
         ctx.font = "16px Arial";
         ctx.fillStyle = "black";
         ctx.fillText(player, tankX + 10, height - tankHeight - 10);
-      };
-
-      const drawTarget = () => {
-        ctx.fillRect(targetX, targetY, targetWidth, targetHeight);
-        ctx.fillStyle = "red";
+        ctx.fillText(`HP: ${health}`, tankX + 10, height - tankHeight + 20);
       };
 
       const keydownHandler = (event) => {
-        currentPlayer == 2;
-        if (currentPlayer == 1) {
-          if (event.keyCode == 37) {
+        if (currentPlayer === 1) {
+          if (event.keyCode === 37) {
             tank1LeftPressed = true;
-          } else if (event.keyCode == 39) {
+          } else if (event.keyCode === 39) {
             tank1RightPressed = true;
-          } else if (event.keyCode == 38 && cannon1Angle <= Math.PI / 2) {
+          } else if (event.keyCode === 38 && cannon1Angle <= Math.PI) {
             cannon1Angle += cannonAngleDIF;
-          } else if (event.keyCode == 40 && cannon1Angle >= 0) {
+          } else if (event.keyCode === 40 && cannon1Angle >= 0) {
             cannon1Angle -= cannonAngleDIF;
-          } else if (event.keyCode == 32 && !isFired) {
+          } else if (event.keyCode === 32 && !isFired) {
             isCharging = true;
           }
-        } else if (currentPlayer == 2) {
-          if (event.keyCode == 65) {
+        } else if (currentPlayer === 2) {
+          if (event.keyCode === 65) {
             // A key
             tank2LeftPressed = true;
-          } else if (event.keyCode == 68) {
+          } else if (event.keyCode === 68) {
             // D key
             tank2RightPressed = true;
-          } else if (event.keyCode == 87 && cannon2Angle <= Math.PI / 2) {
+          } else if (event.keyCode === 87 && cannon2Angle <= Math.PI) {
             // W key
             cannon2Angle += cannonAngleDIF;
-          } else if (event.keyCode == 83 && cannon2Angle >= 0) {
+          } else if (event.keyCode === 83 && cannon2Angle >= 0) {
             // S key
             cannon2Angle -= cannonAngleDIF;
-          } else if (event.keyCode == 32 && !isFired) {
+          } else if (event.keyCode === 32 && !isFired) {
             // Space key
             isCharging = true;
           }
@@ -245,12 +275,12 @@
       };
 
       const keyupHandler = (event) => {
-        if (currentPlayer == 1) {
-          if (event.keyCode == 37) {
+        if (currentPlayer === 1) {
+          if (event.keyCode === 37) {
             tank1LeftPressed = false;
-          } else if (event.keyCode == 39) {
+          } else if (event.keyCode === 39) {
             tank1RightPressed = false;
-          } else if (event.keyCode == 32 && isCharging) {
+          } else if (event.keyCode === 32 && isCharging) {
             isCharging = false;
             isFired = true;
             missilePower = gauge * 1.6;
@@ -259,13 +289,13 @@
             gauge = Math.PI;
           }
         } else {
-          if (event.keyCode == 65) {
+          if (event.keyCode === 65) {
             // A key
             tank2LeftPressed = false;
-          } else if (event.keyCode == 68) {
+          } else if (event.keyCode === 68) {
             // D key
             tank2RightPressed = false;
-          } else if (event.keyCode == 32 && isCharging) {
+          } else if (event.keyCode === 32 && isCharging) {
             // Space key
             isCharging = false;
             isFired = true;
