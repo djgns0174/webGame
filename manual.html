@@ -25,26 +25,65 @@
         border: 1px solid black;
         display: block;
       }
+      .infoDialog {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 100px;
+        border-radius: 10px;
+        display: none;
+        width: 60%;
+        text-align: center;
+      }
+      .infoDialog button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 16px;
+      }
     </style>
   </head>
   <body>
     <canvas id="gameCanvas" width="2000" height="900"></canvas>
+
+    <div id="battleRuleDialog" class="infoDialog">
+      <h2>Battle Rule Info</h2>
+      <p>
+        Welcome to Fortress Duels: Dynamic Warfare! In this game, you will
+        engage in thrilling tank battles in a dynamic environment. Use strategy
+        and skill to outmaneuver your opponents and achieve victory!
+      </p>
+      <button class="closeInfo">Close</button>
+    </div>
+
+    <div id="targetRuleDialog" class="infoDialog">
+      <h2>Target Rule Info</h2>
+      <p>
+        In the Target Rule mode, your goal is to accurately hit designated
+        targets within the time limit. Precision and timing are key to
+        maximizing your score!
+      </p>
+      <button class="closeInfo">Close</button>
+    </div>
+
     <script>
       window.onload = function () {
         var canvas = document.getElementById("gameCanvas");
         var ctx = canvas.getContext("2d");
+        var battleRuleDialog = document.getElementById("battleRuleDialog");
+        var targetRuleDialog = document.getElementById("targetRuleDialog");
+        var closeInfoButtons = document.querySelectorAll(".closeInfo");
 
-        // 폰트 로드 확인
         document.fonts
           .load('40px "MyFont"')
           .then(function () {
             console.log("Font loaded");
 
-            // 이미지 로드
             var background = new Image();
-            background.src = "./picture/intro.jpg"; // 이미지 URL을 설정하세요
+            background.src = "./picture/intro.jpg";
 
-            // 둥근 버튼 스타일
             function drawRoundedRect(x, y, width, height, radius) {
               ctx.beginPath();
               ctx.moveTo(x + radius, y);
@@ -65,7 +104,6 @@
             }
 
             function drawButton(x, y, width, height, radius, text, isPressed) {
-              // 버튼 배경
               ctx.fillStyle = isPressed ? "#888888" : "#A9A9A9";
               drawRoundedRect(x, y, width, height, radius);
               ctx.fill();
@@ -73,7 +111,6 @@
               ctx.lineWidth = 2;
               ctx.stroke();
 
-              // 버튼 텍스트
               ctx.fillStyle = "#fff";
               ctx.font = "35px 'MyFont'";
               ctx.textAlign = "center";
@@ -81,26 +118,43 @@
               ctx.fillText(text, x + width / 2, y + height / 2);
             }
 
-            // 이미지가 로드되면 캔버스에 그리기
             background.onload = function () {
               ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-              // 버튼 그리기
-              drawButton(800, 500, 400, 80, 20, "Game Start", false);
+              drawButton(800, 300, 400, 80, 20, "Battle Rule", false);
+              drawButton(800, 400, 400, 80, 20, "Target Rule", false);
+              drawButton(800, 500, 400, 80, 20, "Back", false);
             };
 
-            let isGameStartPressed = false;
+            let isBattleRulePressed = false;
+            let isTargetRulePressed = false;
+            let isBackPressed = false;
 
-            // 클릭 이벤트
             canvas.addEventListener("mousedown", function (event) {
               var x = event.pageX - canvas.offsetLeft;
               var y = event.pageY - canvas.offsetTop;
 
-              // 게임 시작 버튼 클릭
-              if (x > 800 && x < 1200 && y > 500 && y < 580) {
-                isGameStartPressed = true;
+              if (x > 800 && x < 1200 && y > 300 && y < 380) {
+                isBattleRulePressed = true;
                 ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-                drawButton(800, 500, 400, 80, 20, "Game Start", true);
+                drawButton(800, 300, 400, 80, 20, "Battle Rule", true);
+                drawButton(800, 400, 400, 80, 20, "Target Rule", false);
+                drawButton(800, 500, 400, 80, 20, "Back", false);
+              }
+              if (x > 800 && x < 1200 && y > 400 && y < 480) {
+                isTargetRulePressed = true;
+                ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+                drawButton(800, 300, 400, 80, 20, "Battle Rule", false);
+                drawButton(800, 400, 400, 80, 20, "Target Rule", true);
+                drawButton(800, 500, 400, 80, 20, "Back", false);
+              }
+
+              if (x > 800 && x < 1200 && y > 500 && y < 580) {
+                isBackPressed = true;
+                ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+                drawButton(800, 300, 400, 80, 20, "Battle Rule", false);
+                drawButton(800, 400, 400, 80, 20, "Target Rule", false);
+                drawButton(800, 500, 400, 80, 20, "Back", true);
               }
             });
 
@@ -108,14 +162,45 @@
               var x = event.pageX - canvas.offsetLeft;
               var y = event.pageY - canvas.offsetTop;
 
-              if (isGameStartPressed) {
-                if (x > 800 && x < 1200 && y > 500 && y < 580) {
-                  window.location.href = "main.html";
+              if (isBattleRulePressed) {
+                if (x > 800 && x < 1200 && y > 300 && y < 380) {
+                  battleRuleDialog.style.display = "block";
                 }
-                isGameStartPressed = false;
+                isBattleRulePressed = false;
                 ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-                drawButton(800, 500, 400, 80, 20, "Game Start", false);
+                drawButton(800, 300, 400, 80, 20, "Battle Rule", false);
+                drawButton(800, 400, 400, 80, 20, "Target Rule", false);
+                drawButton(800, 500, 400, 80, 20, "Back", false);
               }
+
+              if (isTargetRulePressed) {
+                if (x > 800 && x < 1200 && y > 400 && y < 480) {
+                  targetRuleDialog.style.display = "block";
+                }
+                isTargetRulePressed = false;
+                ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+                drawButton(800, 300, 400, 80, 20, "Battle Rule", false);
+                drawButton(800, 400, 400, 80, 20, "Target Rule", false);
+                drawButton(800, 500, 400, 80, 20, "Back", false);
+              }
+
+              if (isBackPressed) {
+                if (x > 800 && x < 1200 && y > 500 && y < 580) {
+                  window.location.href = "intro.html";
+                }
+                isBackPressed = false;
+                ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+                drawButton(800, 300, 400, 80, 20, "Battle Rule", false);
+                drawButton(800, 400, 400, 80, 20, "Target Rule", false);
+                drawButton(800, 500, 400, 80, 20, "Back", false);
+              }
+            });
+
+            closeInfoButtons.forEach(function (button) {
+              button.addEventListener("click", function () {
+                battleRuleDialog.style.display = "none";
+                targetRuleDialog.style.display = "none";
+              });
             });
           })
           .catch(function (error) {
