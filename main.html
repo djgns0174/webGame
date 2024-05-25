@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>fortress</title>
+    <title>Fortress Duels: Dynamic Warfare</title>
     <style>
       body {
         margin: 0;
@@ -26,7 +26,7 @@
       const width = canvas.width;
       const height = canvas.height;
       var backgroundImage = new Image();
-      backgroundImage.src = "./picture/game main.jpg";
+      backgroundImage.src = "./picture/main.jpg";
 
       let intervalId;
 
@@ -128,7 +128,6 @@
           tank1CenterX,
           tank1CenterY,
           cannon1Angle,
-          "Player 1",
           player1Health
         );
         drawTank(
@@ -136,7 +135,6 @@
           tank2CenterX,
           tank2CenterY,
           cannon2Angle,
-          "Player 2",
           player2Health
         );
         drawMissile();
@@ -217,7 +215,6 @@
         tankCenterX,
         tankCenterY,
         cannonAngle,
-        player,
         health
       ) => {
         ctx.lineWidth = 5;
@@ -235,10 +232,15 @@
         );
         ctx.stroke();
         ctx.closePath();
-        ctx.font = "16px Arial";
-        ctx.fillStyle = "black";
-        ctx.fillText(player, tankX + 10, height - tankHeight - 10);
-        ctx.fillText(`HP: ${health}`, tankX + 10, height - tankHeight + 20);
+
+        // Drawing health bar
+        ctx.fillStyle = "red";
+        ctx.fillRect(
+          tankX,
+          height - tankHeight - 10,
+          (health / initialHealth) * tankWidth,
+          5
+        );
       };
 
       const keydownHandler = (event) => {
