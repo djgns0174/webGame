@@ -245,32 +245,31 @@
 
       const keydownHandler = (event) => {
         if (currentPlayer === 1) {
-          if (event.keyCode === 37) {
+          if (event.keyCode === 65) {
+            // A key
             tank1LeftPressed = true;
-          } else if (event.keyCode === 39) {
+          } else if (event.keyCode === 68) {
+            // D key
             tank1RightPressed = true;
-          } else if (event.keyCode === 38 && cannon1Angle <= Math.PI) {
+          } else if (event.keyCode === 87 && cannon1Angle <= Math.PI) {
+            // W key
             cannon1Angle += cannonAngleDIF;
-          } else if (event.keyCode === 40 && cannon1Angle >= 0) {
+          } else if (event.keyCode === 83 && cannon1Angle >= 0) {
+            // S key
             cannon1Angle -= cannonAngleDIF;
           } else if (event.keyCode === 32 && !isFired) {
             isCharging = true;
           }
         } else if (currentPlayer === 2) {
-          if (event.keyCode === 65) {
-            // A key
+          if (event.keyCode === 37) {
             tank2LeftPressed = true;
-          } else if (event.keyCode === 68) {
-            // D key
+          } else if (event.keyCode === 39) {
             tank2RightPressed = true;
-          } else if (event.keyCode === 87 && cannon2Angle <= Math.PI) {
-            // W key
+          } else if (event.keyCode === 38 && cannon2Angle <= Math.PI) {
             cannon2Angle += cannonAngleDIF;
-          } else if (event.keyCode === 83 && cannon2Angle >= 0) {
-            // S key
+          } else if (event.keyCode === 40 && cannon2Angle >= 0) {
             cannon2Angle -= cannonAngleDIF;
           } else if (event.keyCode === 32 && !isFired) {
-            // Space key
             isCharging = true;
           }
         }
@@ -278,9 +277,11 @@
 
       const keyupHandler = (event) => {
         if (currentPlayer === 1) {
-          if (event.keyCode === 37) {
+          if (event.keyCode === 65) {
+            // A key
             tank1LeftPressed = false;
-          } else if (event.keyCode === 39) {
+          } else if (event.keyCode === 68) {
+            // D key
             tank1RightPressed = false;
           } else if (event.keyCode === 32 && isCharging) {
             isCharging = false;
@@ -291,11 +292,9 @@
             gauge = Math.PI;
           }
         } else {
-          if (event.keyCode === 65) {
-            // A key
+          if (event.keyCode === 37) {
             tank2LeftPressed = false;
-          } else if (event.keyCode === 68) {
-            // D key
+          } else if (event.keyCode === 39) {
             tank2RightPressed = false;
           } else if (event.keyCode === 32 && isCharging) {
             // Space key

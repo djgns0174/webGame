@@ -48,9 +48,23 @@
   <body>
     <canvas id="gameCanvas" width="2000" height="900"></canvas>
 
-    <div id="keyboardDialog" class="infoDialog">
-      <h2>Keyboard Manual</h2>
-      <div><img src="picture/keyboard manual.png" /></div>
+    <div id="battleRuleDialog" class="infoDialog">
+      <h2>Battle Rule Info</h2>
+      <p>
+        Welcome to Fortress Duels: Dynamic Warfare! In this game, you will
+        engage in thrilling tank battles in a dynamic environment. Use strategy
+        and skill to outmaneuver your opponents and achieve victory!
+      </p>
+      <button class="closeInfo">Close</button>
+    </div>
+
+    <div id="targetRuleDialog" class="infoDialog">
+      <h2>Target Rule Info</h2>
+      <p>
+        In the Target Rule mode, your goal is to accurately hit designated
+        targets within the time limit. Precision and timing are key to
+        maximizing your score!
+      </p>
       <button class="closeInfo">Close</button>
     </div>
 
@@ -58,7 +72,8 @@
       window.onload = function () {
         var canvas = document.getElementById("gameCanvas");
         var ctx = canvas.getContext("2d");
-        var keyboardDialog = document.getElementById("keyboardDialog");
+        var battleRuleDialog = document.getElementById("battleRuleDialog");
+        var targetRuleDialog = document.getElementById("targetRuleDialog");
         var closeInfoButtons = document.querySelectorAll(".closeInfo");
 
         document.fonts
@@ -106,13 +121,13 @@
             background.onload = function () {
               ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-              drawButton(800, 300, 400, 80, 20, "Keyboard", false);
-              drawButton(800, 400, 400, 80, 20, "Mode", false);
+              drawButton(800, 300, 400, 80, 20, "Battle Rule", false);
+              drawButton(800, 400, 400, 80, 20, "Target Rule", false);
               drawButton(800, 500, 400, 80, 20, "Back", false);
             };
 
-            let isKeyboardPressed = false;
-            let isModePressed = false;
+            let isBattleRulePressed = false;
+            let isTargetRulePressed = false;
             let isBackPressed = false;
 
             canvas.addEventListener("mousedown", function (event) {
@@ -120,25 +135,25 @@
               var y = event.pageY - canvas.offsetTop;
 
               if (x > 800 && x < 1200 && y > 300 && y < 380) {
-                isKeyboardPressed = true;
+                isBattleRulePressed = true;
                 ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-                drawButton(800, 300, 400, 80, 20, "Keyboard", true);
-                drawButton(800, 400, 400, 80, 20, "Mode", false);
+                drawButton(800, 300, 400, 80, 20, "Battle Rule", true);
+                drawButton(800, 400, 400, 80, 20, "Target Rule", false);
                 drawButton(800, 500, 400, 80, 20, "Back", false);
               }
               if (x > 800 && x < 1200 && y > 400 && y < 480) {
-                isModePressed = true;
+                isTargetRulePressed = true;
                 ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-                drawButton(800, 300, 400, 80, 20, "Keyboard", false);
-                drawButton(800, 400, 400, 80, 20, "Mode", true);
+                drawButton(800, 300, 400, 80, 20, "Battle Rule", false);
+                drawButton(800, 400, 400, 80, 20, "Target Rule", true);
                 drawButton(800, 500, 400, 80, 20, "Back", false);
               }
 
               if (x > 800 && x < 1200 && y > 500 && y < 580) {
                 isBackPressed = true;
                 ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-                drawButton(800, 300, 400, 80, 20, "Keyboard", false);
-                drawButton(800, 400, 400, 80, 20, "Mode", false);
+                drawButton(800, 300, 400, 80, 20, "Battle Rule", false);
+                drawButton(800, 400, 400, 80, 20, "Target Rule", false);
                 drawButton(800, 500, 400, 80, 20, "Back", true);
               }
             });
@@ -147,43 +162,44 @@
               var x = event.pageX - canvas.offsetLeft;
               var y = event.pageY - canvas.offsetTop;
 
-              if (isKeyboardPressed) {
+              if (isBattleRulePressed) {
                 if (x > 800 && x < 1200 && y > 300 && y < 380) {
-                  keyboardDialog.style.display = "block";
+                  battleRuleDialog.style.display = "block";
                 }
-                isKeyboardPressed = false;
+                isBattleRulePressed = false;
                 ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-                drawButton(800, 300, 400, 80, 20, "Keyboard", false);
-                drawButton(800, 400, 400, 80, 20, "Mode", false);
+                drawButton(800, 300, 400, 80, 20, "Battle Rule", false);
+                drawButton(800, 400, 400, 80, 20, "Target Rule", false);
                 drawButton(800, 500, 400, 80, 20, "Back", false);
               }
 
-              if (isModePressed) {
+              if (isTargetRulePressed) {
                 if (x > 800 && x < 1200 && y > 400 && y < 480) {
-                  window.location.href = "manual_mode.html";
+                  targetRuleDialog.style.display = "block";
                 }
-                isModePressed = false;
+                isTargetRulePressed = false;
                 ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-                drawButton(800, 300, 400, 80, 20, "Keyboard", false);
-                drawButton(800, 400, 400, 80, 20, "Mode", false);
+                drawButton(800, 300, 400, 80, 20, "Battle Rule", false);
+                drawButton(800, 400, 400, 80, 20, "Target Rule", false);
                 drawButton(800, 500, 400, 80, 20, "Back", false);
               }
 
               if (isBackPressed) {
                 if (x > 800 && x < 1200 && y > 500 && y < 580) {
-                  window.location.href = "intro.html";
+                  window.location.href = "manual.html";
                 }
                 isBackPressed = false;
                 ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-                drawButton(800, 300, 400, 80, 20, "Keyboard", false);
-                drawButton(800, 400, 400, 80, 20, "Mode", false);
+                drawButton(800, 300, 400, 80, 20, "Battle Rule", false);
+                drawButton(800, 400, 400, 80, 20, "Target Rule", false);
                 drawButton(800, 500, 400, 80, 20, "Back", false);
               }
             });
 
             closeInfoButtons.forEach(function (button) {
               button.addEventListener("click", function () {
-                keyboardDialog.style.display = "none";
+                battleRuleDialog.style.display = "none";
+                targetRuleDialog.style.display = "none";
               });
             });
           })
