@@ -12,13 +12,62 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        position: relative;
       }
       #fortress {
         border: 1px solid black;
       }
+      .scoreboard {
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #333;
+        border: 2px solid #fff;
+        border-radius: 10px;
+        padding: 10px 20px;
+        color: #fff;
+        font-family: "Arial", sans-serif;
+        font-size: 24px;
+      }
+      .team {
+        margin: 0 20px;
+        text-align: center;
+      }
+      .team-name {
+        font-size: 18px;
+        margin-bottom: 5px;
+      }
+      .score {
+        font-size: 48px;
+        font-weight: bold;
+        background: red;
+        border-radius: 5px;
+        padding: 5px 10px;
+      }
+      .colon {
+        font-size: 48px;
+        margin: 0 10px;
+      }
     </style>
   </head>
   <body>
+    <div class="scoreboard">
+      <div class="team">
+        <div id="score1" class="score">
+          <span id="score1-value">0</span>
+        </div>
+      </div>
+      <div class="colon">:</div>
+      <div class="team">
+        <div id="score2" class="score">
+          <span id="score2-value">0</span>
+        </div>
+      </div>
+    </div>
     <canvas id="fortress" width="2000" height="900"></canvas>
     <script>
       const canvas = document.getElementById("fortress");
@@ -45,6 +94,7 @@
       const tankDx = 3;
       const cannonAngleDIF = Math.PI / 60;
       const cannonLength = tankWidth * Math.sqrt(2);
+      const maxMoveDistance = 250;
 
       // Player 1
       let tank1X = 0;
@@ -54,6 +104,7 @@
       let tank1LeftPressed = false;
       let tank1RightPressed = false;
       let player1Score = 0;
+      let tank1MoveDistance = 0;
 
       // Player 2
       let tank2X = width - tankWidth;
@@ -63,6 +114,7 @@
       let tank2LeftPressed = false;
       let tank2RightPressed = false;
       let player2Score = 0;
+      let tank2MoveDistance = 0;
 
       let missileRadius = 5;
       let missileX;
@@ -86,10 +138,10 @@
       let targetHeight;
 
       const generateTarget = () => {
-        targetWidth = (Math.random() * 50 + 20) * 2; // Width between 40 and 140
-        targetHeight = (Math.random() * 50 + 20) * 2; // Height between 40 and 140
-        targetX = width / 2 - targetWidth / 2;
-        targetY = Math.random() * (height / 4) + height / 4; // Y position around the middle of the canvas
+        targetWidth = (Math.random() * 50 + 20) * 1.5; // Width between 40 and 140
+        targetHeight = (Math.random() * 50 + 20) * 1.5; // Height between 40 and 140
+        targetX = Math.random() * (width - targetWidth);
+        targetY = Math.random() * (height / 3.5) + height / 4; // Y position around the middle of the canvas
       };
 
       const draw = () => {
@@ -101,18 +153,38 @@
         tank2CenterX = tank2X + 0.5 * tankWidth;
         tank2CenterY = height - 0.5 * tankHeight;
 
-        if (tank1LeftPressed && tank1X > 0) {
+        if (
+          tank1LeftPressed &&
+          tank1X > 0 &&
+          tank1MoveDistance < maxMoveDistance
+        ) {
           tank1X -= tankDx;
+          tank1MoveDistance += tankDx;
         }
-        if (tank1RightPressed && tank1X + tankWidth < width) {
+        if (
+          tank1RightPressed &&
+          tank1X + tankWidth < width &&
+          tank1MoveDistance < maxMoveDistance
+        ) {
           tank1X += tankDx;
+          tank1MoveDistance += tankDx;
         }
 
-        if (tank2LeftPressed && tank2X > 0) {
+        if (
+          tank2LeftPressed &&
+          tank2X > 0 &&
+          tank2MoveDistance < maxMoveDistance
+        ) {
           tank2X -= tankDx;
+          tank2MoveDistance += tankDx;
         }
-        if (tank2RightPressed && tank2X + tankWidth < width) {
+        if (
+          tank2RightPressed &&
+          tank2X + tankWidth < width &&
+          tank2MoveDistance < maxMoveDistance
+        ) {
           tank2X += tankDx;
+          tank2MoveDistance += tankDx;
         }
 
         if (isCharging && !isFired) {
@@ -140,7 +212,7 @@
         drawTank(tank2X, tank2CenterX, tank2CenterY, cannon2Angle);
         drawMissile();
         drawTarget();
-        drawScores();
+        updateScores();
       };
 
       const checkMissile = () => {
@@ -173,6 +245,8 @@
         isFired = false;
         isCharging = false;
         gauge = Math.PI;
+        tank1MoveDistance = 0; // Reset move distance for Player 1
+        tank2MoveDistance = 0; // Reset move distance for Player 2
       };
 
       const drawMissile = () => {
@@ -220,11 +294,9 @@
         ctx.closePath();
       };
 
-      const drawScores = () => {
-        ctx.font = "20px Arial";
-        ctx.fillStyle = "black";
-        ctx.fillText("Player 1 Score: " + player1Score, 20, 30);
-        ctx.fillText("Player 2 Score: " + player2Score, width - 170, 30);
+      const updateScores = () => {
+        document.getElementById("score1-value").innerHTML = player1Score;
+        document.getElementById("score2-value").innerHTML = player2Score;
       };
 
       const keydownHandler = (event) => {
