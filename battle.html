@@ -39,11 +39,11 @@
         intervalId = setInterval(draw, 10);
       };
 
-      const tankWidth = 50;
-      const tankHeight = 50;
+      const tankWidth = 150;
+      const tankHeight = 150;
       const tankDx = 3;
       const cannonAngleDIF = Math.PI / 60;
-      const cannonLength = tankWidth * Math.sqrt(2);
+      const cannonLength = 100 * Math.sqrt(2);
       const initialHealth = 100;
 
       // Player 1
@@ -210,37 +210,19 @@
         ctx.stroke();
       };
 
-      const drawTank = (
-        tankX,
-        tankCenterX,
-        tankCenterY,
-        cannonAngle,
-        health
-      ) => {
-        ctx.lineWidth = 5;
-        ctx.lineCap = "round";
-        ctx.beginPath();
-        ctx.moveTo(tankX, height - tankHeight);
-        ctx.lineTo(tankX + tankWidth, height - tankHeight);
-        ctx.lineTo(tankX + tankWidth, height);
-        ctx.lineTo(tankX, height);
-        ctx.lineTo(tankX, height - tankHeight);
-        ctx.moveTo(tankCenterX, tankCenterY);
-        ctx.lineTo(
-          tankCenterX + cannonLength * Math.cos(cannonAngle),
-          tankCenterY - cannonLength * Math.sin(cannonAngle)
-        );
-        ctx.stroke();
-        ctx.closePath();
+      const tank2BodyImg = new Image();
+      tank2BodyImg.src = './picture/tank2BodyImage.png'
+      const cannon2Image = new Image();
+      cannon2Image.src = './picture/cannon2Image.png'
+      const drawTank = (tankX, tankCenterX, tankCenterY, cannonAngle) => {
+        ctx.drawImage(tank2BodyImg, tankX, height - tankHeight, tankWidth, tankHeight);
 
-        // Drawing health bar
-        ctx.fillStyle = "red";
-        ctx.fillRect(
-          tankX,
-          height - tankHeight - 10,
-          (health / initialHealth) * tankWidth,
-          5
-        );
+        // 포신 이미지 회전 및 그리기
+        ctx.save();
+        ctx.translate(tankCenterX, tankCenterY);
+        ctx.rotate(-cannonAngle); // 캔버스의 y축이 아래쪽을 향하므로 -를 붙임
+        ctx.drawImage(cannon2Image, 15, -25, 100, 70);
+        ctx.restore();
       };
 
       const keydownHandler = (event) => {

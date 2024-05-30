@@ -269,9 +269,9 @@
       };
 
       const tank2BodyImg = new Image();
-      tank2BodyImg.src = './picture/tank2BodyImage.jpg'
+      tank2BodyImg.src = './picture/tank2BodyImage.png'
       const cannon2Image = new Image();
-      cannon2Image.src = './picture/cannon2Image.jpg'
+      cannon2Image.src = './picture/cannon2Image.png'
       const drawTank = (tankX, tankCenterX, tankCenterY, cannonAngle) => {
         ctx.drawImage(tank2BodyImg, tankX, height - tankHeight, tankWidth, tankHeight);
 
@@ -279,7 +279,7 @@
         ctx.save();
         ctx.translate(tankCenterX, tankCenterY);
         ctx.rotate(-cannonAngle); // 캔버스의 y축이 아래쪽을 향하므로 -를 붙임
-        ctx.drawImage(cannon2Image, 0, -cannon2Image.height / 2, cannonLength, cannon2Image.height);
+        ctx.drawImage(cannon2Image, 15, -25, 100, 70);
         ctx.restore();
       };
 
