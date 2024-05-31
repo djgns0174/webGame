@@ -47,9 +47,10 @@
       const initialHealth = 100;
       const defaultMissileRadius = 5;
 
-      function Tank(type, skills) {
+      function Tank(type, skills, skillKeys) {
         this.type = type;
         this.skills = skills;
+        this.skillKeys = skillKeys;
         this.skillAvailable = {
           damage: true,
           chance: true,
@@ -63,8 +64,34 @@
         this.sizeMultiplier = 1;
       }
 
+      // 공격스킬 : chance (2회발사가능), big (포탄의 크기 증가), damage (공격력 증가), area (상대 피해범위 증가)
+
+      // 로컬 스토리지에서 선택된 탱크 로드
+      const selectedTank1 = localStorage.getItem("user1");
+      const selectedTank2 = localStorage.getItem("user2");
+
+      const tankImages = {
+        Tank1: "./picture/pinkTank.png",
+        Tank2: "./picture/blueTank.png",
+        Tank3: "./picture/greenTank.png",
+        Tank4: "./picture/brownTank.png",
+      };
+
+      const tank1BodyImg = new Image();
+      tank1BodyImg.src = tankImages[selectedTank1];
+
+      const tank2BodyImg = new Image();
+      tank2BodyImg.src = tankImages[selectedTank2];
+
+      const cannonImage = new Image();
+      cannonImage.src = "./picture/cannon2Image.png"; // 고정된 포신 이미지
+
       // Player 1
-      let player1Tank = new Tank("userLeft", ["damage", "chance", "big"]);
+      let player1Tank = new Tank(
+        "userLeft",
+        ["chance", "big", "damage"],
+        ["1", "2", "3"]
+      );
       let tank1X = 0;
       let tank1CenterX;
       let tank1CenterY;
@@ -74,7 +101,11 @@
       let player1Health = initialHealth;
 
       // Player 2
-      let player2Tank = new Tank("userRight", ["damage", "big", "area"]);
+      let player2Tank = new Tank(
+        "userRight",
+        ["damage", "big", "area"],
+        ["8", "9", "0"]
+      );
       let tank2X = width - tankWidth;
       let tank2CenterX;
       let tank2CenterY;
@@ -164,7 +195,8 @@
           tank1CenterY,
           cannon1Angle,
           player1Health,
-          player1Tank.sizeMultiplier
+          player1Tank.sizeMultiplier,
+          tank1BodyImg
         );
         drawTank(
           tank2X,
@@ -172,7 +204,8 @@
           tank2CenterY,
           cannon2Angle,
           player2Health,
-          player2Tank.sizeMultiplier
+          player2Tank.sizeMultiplier,
+          tank2BodyImg
         );
         drawMissile();
       };
@@ -293,23 +326,20 @@
         ctx.stroke();
       };
 
-      const tank2BodyImg = new Image();
-      tank2BodyImg.src = "./picture/tank2BodyImage.png";
-      const cannon2Image = new Image();
-      cannon2Image.src = "./picture/cannon2Image.png";
       const drawTank = (
         tankX,
         tankCenterX,
         tankCenterY,
         cannonAngle,
         health,
-        sizeMultiplier
+        sizeMultiplier,
+        tankImg
       ) => {
         const scaledTankWidth = tankWidth * sizeMultiplier;
         const scaledTankHeight = tankHeight * sizeMultiplier;
 
         ctx.drawImage(
-          tank2BodyImg,
+          tankImg,
           tankX,
           height - scaledTankHeight,
           scaledTankWidth,
@@ -320,7 +350,7 @@
         ctx.save();
         ctx.translate(tankCenterX, tankCenterY);
         ctx.rotate(-cannonAngle); // 캔버스의 y축이 아래쪽을 향하므로 -를 붙임
-        ctx.drawImage(cannon2Image, 15, -25, 100, 70);
+        ctx.drawImage(cannonImage, 15, -25, 100, 70);
         ctx.restore();
       };
 
@@ -379,7 +409,7 @@
 
         if (key === " ") {
           if (!isFired) isCharging = true;
-        } else if (["1", "2", "3", "8", "9", "0"].includes(key)) {
+        } else if (currentTank.skillKeys.includes(key)) {
           useSkillByKey(currentTank, opponentTank, key);
         }
       };
@@ -435,19 +465,9 @@
       };
 
       const useSkillByKey = (currentTank, opponentTank, key) => {
-        const skillMap = {
-          1: "damage",
-          2: "chance",
-          3: "big",
-          8: "damage",
-          9: "big",
-          0: "area",
-        };
-        const skill = skillMap[key];
-        if (
-          currentTank.skills.includes(skill) &&
-          currentTank.skillAvailable[skill]
-        ) {
+        const skillIndex = currentTank.skillKeys.indexOf(key);
+        const skill = currentTank.skills[skillIndex];
+        if (currentTank.skillAvailable[skill]) {
           applySkill(currentTank, opponentTank, skill);
           useSkill(currentTank, skill);
         }
