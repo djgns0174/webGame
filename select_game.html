@@ -86,8 +86,8 @@
               ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
               // 버튼 그리기
-              drawButton(800, 200, 400, 80, 20, "Game Start", false);
-              drawButton(800, 350, 400, 80, 20, "Manual", false);
+              drawButton(800, 200, 400, 80, 20, "Battle", false);
+              drawButton(800, 350, 400, 80, 20, "Target", false);
             };
 
             let isGameStartPressed = false;
@@ -102,16 +102,16 @@
               if (x > 800 && x < 1200 && y > 200 && y < 280) {
                 isGameStartPressed = true;
                 ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-                drawButton(800, 200, 400, 80, 20, "Game Start", true);
-                drawButton(800, 350, 400, 80, 20, "Manual", false);
+                drawButton(800, 200, 400, 80, 20, "Battle", true);
+                drawButton(800, 350, 400, 80, 20, "Target", false);
               }
 
               // 게임 방법 버튼 클릭
               if (x > 800 && x < 1200 && y > 350 && y < 430) {
                 isManualPressed = true;
                 ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-                drawButton(800, 200, 400, 80, 20, "Game Start", false);
-                drawButton(800, 350, 400, 80, 20, "Manual", true);
+                drawButton(800, 200, 400, 80, 20, "Battle", false);
+                drawButton(800, 350, 400, 80, 20, "Target", true);
               }
             });
 
@@ -126,7 +126,7 @@
                 y > 200 &&
                 y < 280
               ) {
-                window.location.href = "select_game.html";
+                window.location.href = "select_item.html";
               }
 
               if (
@@ -136,14 +136,14 @@
                 y > 350 &&
                 y < 430
               ) {
-                window.location.href = "manual.html";
+                window.location.href = "target.html";
               }
 
               isGameStartPressed = false;
               isManualPressed = false;
               ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-              drawButton(800, 200, 400, 80, 20, "Game Start", false);
-              drawButton(800, 350, 400, 80, 20, "Manual", false);
+              drawButton(800, 200, 400, 80, 20, "Battle", false);
+              drawButton(800, 350, 400, 80, 20, "Target", false);
             });
           })
           .catch(function (error) {

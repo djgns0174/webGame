@@ -45,6 +45,7 @@
       const cannonAngleDIF = Math.PI / 60;
       const cannonLength = 100 * Math.sqrt(2);
       const initialHealth = 100;
+      const defaultMissileRadius = 5;
 
       // Player 1
       let tank1X = 0;
@@ -54,6 +55,10 @@
       let tank1LeftPressed = false;
       let tank1RightPressed = false;
       let player1Health = initialHealth;
+      let player1Items = [false, false, false];
+      let player1DamageMultiplier = 1;
+      let player1MissileRadiusMultiplier = 1;
+      let player1DoubleAttack = false;
 
       // Player 2
       let tank2X = width - tankWidth;
@@ -63,8 +68,12 @@
       let tank2LeftPressed = false;
       let tank2RightPressed = false;
       let player2Health = initialHealth;
+      let player2Items = [false, false, false];
+      let player2DamageMultiplier = 1;
+      let player2MissileRadiusMultiplier = 1;
+      let player2DoubleAttack = false;
 
-      let missileRadius = 5;
+      let missileRadius = defaultMissileRadius;
       let missileX;
       let missileY;
       let isCharging = false;
@@ -78,10 +87,15 @@
       const GRAVITY_ACCELERATION = 0.098;
 
       let currentPlayer = 1; // 1: Player 1, 2: Player 2
+      let currentPlayerShots = 1; // 기본 1회 공격
+      let shotsFired = 0;
 
       const draw = () => {
         ctx.clearRect(0, 0, width, height);
         ctx.drawImage(backgroundImage, 0, 0, width, height); // 매 프레임마다 배경 이미지 그리기
+
+        // 플레이어 상태 표시
+        drawPlayerStatus();
 
         tank1CenterX = tank1X + 0.5 * tankWidth;
         tank1CenterY = height - 0.5 * tankHeight;
@@ -110,6 +124,11 @@
         }
 
         if (!isFired) {
+          missileRadius =
+            currentPlayer === 1
+              ? defaultMissileRadius * player1MissileRadiusMultiplier
+              : defaultMissileRadius * player2MissileRadiusMultiplier;
+
           if (currentPlayer === 1) {
             missileX = tank1CenterX + cannonLength * Math.cos(cannon1Angle);
             missileY = tank1CenterY - cannonLength * Math.sin(cannon1Angle);
@@ -143,8 +162,7 @@
       const checkMissile = () => {
         // canvas 왼쪽, 오른쪽, 아래 벽에 닿으면
         if (missileX <= 0 || missileX >= width || missileY >= height) {
-          isFired = false;
-          switchPlayer();
+          handleMissileEnd();
         }
 
         // Player 1 명중
@@ -154,14 +172,14 @@
           missileX <= tank1X + tankWidth &&
           missileY >= height - tankHeight
         ) {
-          player1Health -= 20;
+          player1Health -= 20 * player2DamageMultiplier;
           isFired = false;
           if (player1Health <= 0) {
             clearInterval(intervalId);
             alert("Player 2 wins!");
             location.reload();
           } else {
-            switchPlayer();
+            handleMissileEnd();
           }
         }
 
@@ -172,15 +190,26 @@
           missileX <= tank2X + tankWidth &&
           missileY >= height - tankHeight
         ) {
-          player2Health -= 20;
+          player2Health -= 20 * player1DamageMultiplier;
           isFired = false;
           if (player2Health <= 0) {
             clearInterval(intervalId);
             alert("Player 1 wins!");
             location.reload();
           } else {
-            switchPlayer();
+            handleMissileEnd();
           }
+        }
+      };
+
+      const handleMissileEnd = () => {
+        isFired = false;
+        shotsFired++;
+        if (shotsFired < currentPlayerShots) {
+          // 현재 턴에서 두 번 공격을 가능하게 하는 로직
+          gauge = Math.PI; // 파워 게이지 초기화
+        } else {
+          switchPlayer();
         }
       };
 
@@ -189,6 +218,24 @@
         isFired = false;
         isCharging = false;
         gauge = Math.PI;
+        resetKeys();
+        resetMultipliers();
+        shotsFired = 0;
+        currentPlayerShots = 1;
+      };
+
+      const resetKeys = () => {
+        tank1LeftPressed = false;
+        tank1RightPressed = false;
+        tank2LeftPressed = false;
+        tank2RightPressed = false;
+      };
+
+      const resetMultipliers = () => {
+        player1DamageMultiplier = 1;
+        player2DamageMultiplier = 1;
+        player1MissileRadiusMultiplier = 1;
+        player2MissileRadiusMultiplier = 1;
       };
 
       const drawMissile = () => {
@@ -211,11 +258,17 @@
       };
 
       const tank2BodyImg = new Image();
-      tank2BodyImg.src = './picture/tank2BodyImage.png'
+      tank2BodyImg.src = "./picture/tank2BodyImage.png";
       const cannon2Image = new Image();
-      cannon2Image.src = './picture/cannon2Image.png'
+      cannon2Image.src = "./picture/cannon2Image.png";
       const drawTank = (tankX, tankCenterX, tankCenterY, cannonAngle) => {
-        ctx.drawImage(tank2BodyImg, tankX, height - tankHeight, tankWidth, tankHeight);
+        ctx.drawImage(
+          tank2BodyImg,
+          tankX,
+          height - tankHeight,
+          tankWidth,
+          tankHeight
+        );
 
         // 포신 이미지 회전 및 그리기
         ctx.save();
@@ -223,6 +276,23 @@
         ctx.rotate(-cannonAngle); // 캔버스의 y축이 아래쪽을 향하므로 -를 붙임
         ctx.drawImage(cannon2Image, 15, -25, 100, 70);
         ctx.restore();
+      };
+
+      const drawPlayerStatus = () => {
+        ctx.font = "20px Arial";
+        ctx.fillStyle = "black";
+        ctx.fillText(`Player 1 HP: ${player1Health}`, 20, 30);
+        ctx.fillText(`Player 2 HP: ${player2Health}`, width - 150, 30);
+
+        drawPlayerItems(player1Items, 20, 50);
+        drawPlayerItems(player2Items, width - 150, 50);
+      };
+
+      const drawPlayerItems = (items, startX, startY) => {
+        items.forEach((item, index) => {
+          ctx.fillStyle = item ? "rgba(0, 0, 0, 0.5)" : "rgba(0, 0, 0, 1)";
+          ctx.fillRect(startX + index * 40, startY, 30, 30);
+        });
       };
 
       const keydownHandler = (event) => {
@@ -241,6 +311,18 @@
             cannon1Angle -= cannonAngleDIF;
           } else if (event.keyCode === 32 && !isFired) {
             isCharging = true;
+          } else if (event.keyCode === 49) {
+            // 1 key: 공격력 증가
+            player1DamageMultiplier = 2;
+            useItem(1, 0);
+          } else if (event.keyCode === 50) {
+            // 2 key: 2회 공격 가능
+            player1DoubleAttack = true;
+            currentPlayerShots = 2; // 현재 턴에서 두 번 공격 가능하게 설정
+            useItem(1, 1);
+          } else if (event.keyCode === 51) {
+            // 3 key
+            useItem(1, 2);
           }
         } else if (currentPlayer === 2) {
           if (event.keyCode === 37) {
@@ -253,6 +335,16 @@
             cannon2Angle -= cannonAngleDIF;
           } else if (event.keyCode === 32 && !isFired) {
             isCharging = true;
+          } else if (event.keyCode === 56) {
+            // 8 key: 미사일 크기 증가
+            player2MissileRadiusMultiplier = 2;
+            useItem(2, 0);
+          } else if (event.keyCode === 57) {
+            // 9 key
+            useItem(2, 1);
+          } else if (event.keyCode === 48) {
+            // 0 key
+            useItem(2, 2);
           }
         }
       };
@@ -271,7 +363,7 @@
             missilePower = gauge * 1.6;
             missileDx = missilePower * Math.cos(cannon1Angle);
             missileDy = missilePower * Math.sin(cannon1Angle);
-            gauge = Math.PI;
+            gauge = Math.PI; // 게이지 초기화
           }
         } else {
           if (event.keyCode === 37) {
@@ -285,8 +377,16 @@
             missilePower = gauge * 1.6;
             missileDx = missilePower * Math.cos(cannon2Angle);
             missileDy = missilePower * Math.sin(cannon2Angle);
-            gauge = Math.PI;
+            gauge = Math.PI; // 게이지 초기화
           }
+        }
+      };
+
+      const useItem = (player, itemIndex) => {
+        if (player === 1) {
+          player1Items[itemIndex] = true;
+        } else {
+          player2Items[itemIndex] = true;
         }
       };
 
