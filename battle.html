@@ -47,7 +47,14 @@
       const initialHealth = 100;
       const defaultMissileRadius = 5;
 
+      function Tank(type, skillKeys) {
+        this.type = type;
+        this.skillKeys = skillKeys;
+        this.skillAvailable = [true, true, true];
+      }
+
       // Player 1
+      let player1Tank = new Tank("userLeft", ["1", "2", "3"]);
       let tank1X = 0;
       let tank1CenterX;
       let tank1CenterY;
@@ -55,13 +62,13 @@
       let tank1LeftPressed = false;
       let tank1RightPressed = false;
       let player1Health = initialHealth;
-      let player1Items = [false, false, false];
       let player1DamageMultiplier = 1;
       let player1MissileRadiusMultiplier = 1;
       let player1DoubleAttack = false;
       let player1IncreasedRange = false;
 
       // Player 2
+      let player2Tank = new Tank("userRight", ["8", "9", "0"]);
       let tank2X = width - tankWidth;
       let tank2CenterX;
       let tank2CenterY;
@@ -69,7 +76,6 @@
       let tank2LeftPressed = false;
       let tank2RightPressed = false;
       let player2Health = initialHealth;
-      let player2Items = [false, false, false];
       let player2DamageMultiplier = 1;
       let player2MissileRadiusMultiplier = 1;
       let player2DoubleAttack = false;
@@ -292,82 +298,96 @@
         ctx.fillText(`Player 1 HP: ${player1Health}`, 20, 30);
         ctx.fillText(`Player 2 HP: ${player2Health}`, width - 150, 30);
 
-        drawPlayerItems(player1Items, 20, 50);
-        drawPlayerItems(player2Items, width - 150, 50);
+        drawPlayerItems(player1Tank, 20, 50);
+        drawPlayerItems(player2Tank, width - 150, 50);
       };
 
-      const drawPlayerItems = (items, startX, startY) => {
+      const drawPlayerItems = (tank, startX, startY) => {
+        const items = tank.skillAvailable;
         items.forEach((item, index) => {
-          ctx.fillStyle = item ? "rgba(0, 0, 0, 0.5)" : "rgba(0, 0, 0, 1)";
+          ctx.fillStyle = item ? "rgba(0, 0, 0, 1)" : "rgba(0, 0, 0, 0.5)";
           ctx.fillRect(startX + index * 40, startY, 30, 30);
         });
       };
 
       const keydownHandler = (event) => {
+        const key = event.key;
         if (currentPlayer === 1) {
-          if (event.keyCode === 65) {
+          if (key === "a" || key === "A") {
             // A key
             tank1LeftPressed = true;
-          } else if (event.keyCode === 68) {
+          } else if (key === "d" || key === "D") {
             // D key
             tank1RightPressed = true;
-          } else if (event.keyCode === 87 && cannon1Angle <= Math.PI) {
+          } else if (key === "w" || (key === "W" && cannon1Angle <= Math.PI)) {
             // W key
             cannon1Angle += cannonAngleDIF;
-          } else if (event.keyCode === 83 && cannon1Angle >= 0) {
+          } else if (key === "s" || (key === "S" && cannon1Angle >= 0)) {
             // S key
             cannon1Angle -= cannonAngleDIF;
-          } else if (event.keyCode === 32 && !isFired) {
-            isCharging = true;
-          } else if (event.keyCode === 49) {
-            // 1 key: 공격력 증가
-            player1DamageMultiplier = 2;
-            useItem(1, 0);
-          } else if (event.keyCode === 50) {
-            // 2 key: 2회 공격 가능
-            player1DoubleAttack = true;
-            currentPlayerShots = 2; // 현재 턴에서 두 번 공격 가능하게 설정
-            useItem(1, 1);
-          } else if (event.keyCode === 51) {
-            // 3 key
-            player1IncreasedRange = true;
-            useItem(1, 2);
+          } else if (key === " ") {
+            // Space key
+            if (!isFired) isCharging = true;
+          } else if (key === player1Tank.skillKeys[0]) {
+            // Skill 1 key
+            if (player1Tank.skillAvailable[0]) {
+              player1DamageMultiplier = 2;
+              useItem(player1Tank, 0);
+            }
+          } else if (key === player1Tank.skillKeys[1]) {
+            // Skill 2 key
+            if (player1Tank.skillAvailable[1]) {
+              player1DoubleAttack = true;
+              currentPlayerShots = 2; // 현재 턴에서 두 번 공격 가능하게 설정
+              useItem(player1Tank, 1);
+            }
+          } else if (key === player1Tank.skillKeys[2]) {
+            // Skill 3 key
+            if (player1Tank.skillAvailable[2]) {
+              player1IncreasedRange = true;
+              useItem(player1Tank, 2);
+            }
           }
         } else if (currentPlayer === 2) {
-          if (event.keyCode === 37) {
+          if (key === "ArrowLeft") {
             tank2LeftPressed = true;
-          } else if (event.keyCode === 39) {
+          } else if (key === "ArrowRight") {
             tank2RightPressed = true;
-          } else if (event.keyCode === 38 && cannon2Angle <= Math.PI) {
+          } else if (key === "ArrowUp" && cannon2Angle <= Math.PI) {
             cannon2Angle += cannonAngleDIF;
-          } else if (event.keyCode === 40 && cannon2Angle >= 0) {
+          } else if (key === "ArrowDown" && cannon2Angle >= 0) {
             cannon2Angle -= cannonAngleDIF;
-          } else if (event.keyCode === 32 && !isFired) {
-            isCharging = true;
-          } else if (event.keyCode === 56) {
-            // 8 key: 미사일 크기 증가
-            player2MissileRadiusMultiplier = 2;
-            useItem(2, 0);
-          } else if (event.keyCode === 57) {
-            // 9 key: 공격범위 증가
-            player2IncreasedRange = true;
-            useItem(2, 1);
-          } else if (event.keyCode === 48) {
-            // 0 key
-            useItem(2, 2);
+          } else if (key === " ") {
+            if (!isFired) isCharging = true;
+          } else if (key === player2Tank.skillKeys[0]) {
+            // Skill 1 key
+            if (player2Tank.skillAvailable[0]) {
+              player2MissileRadiusMultiplier = 2;
+              useItem(player2Tank, 0);
+            }
+          } else if (key === player2Tank.skillKeys[1]) {
+            // Skill 2 key
+            if (player2Tank.skillAvailable[1]) {
+              player2IncreasedRange = true;
+              useItem(player2Tank, 1);
+            }
+          } else if (key === player2Tank.skillKeys[2]) {
+            // Skill 3 key
+            if (player2Tank.skillAvailable[2]) {
+              useItem(player2Tank, 2);
+            }
           }
         }
       };
 
       const keyupHandler = (event) => {
+        const key = event.key;
         if (currentPlayer === 1) {
-          if (event.keyCode === 65) {
-            // A key
+          if (key === "a" || key === "A") {
             tank1LeftPressed = false;
-          } else if (event.keyCode === 68) {
-            // D key
+          } else if (key === "d" || key === "D") {
             tank1RightPressed = false;
-          } else if (event.keyCode === 32 && isCharging) {
+          } else if (key === " " && isCharging) {
             isCharging = false;
             isFired = true;
             missilePower = gauge * 1.6;
@@ -376,12 +396,11 @@
             gauge = Math.PI; // 게이지 초기화
           }
         } else {
-          if (event.keyCode === 37) {
+          if (key === "ArrowLeft") {
             tank2LeftPressed = false;
-          } else if (event.keyCode === 39) {
+          } else if (key === "ArrowRight") {
             tank2RightPressed = false;
-          } else if (event.keyCode === 32 && isCharging) {
-            // Space key
+          } else if (key === " " && isCharging) {
             isCharging = false;
             isFired = true;
             missilePower = gauge * 1.6;
@@ -392,12 +411,8 @@
         }
       };
 
-      const useItem = (player, itemIndex) => {
-        if (player === 1) {
-          player1Items[itemIndex] = true;
-        } else {
-          player2Items[itemIndex] = true;
-        }
+      const useItem = (tank, itemIndex) => {
+        tank.skillAvailable[itemIndex] = false;
       };
 
       document.addEventListener("keydown", keydownHandler, false);
