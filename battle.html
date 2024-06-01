@@ -26,7 +26,7 @@
       const width = canvas.width;
       const height = canvas.height;
       var backgroundImage = new Image();
-      backgroundImage.src = "./picture/main.jpg";
+      backgroundImage.src = "./picture/BackGround/main.jpg";
 
       let intervalId;
 
@@ -45,7 +45,7 @@
       const cannonAngleDIF = Math.PI / 60;
       const cannonLength = 100 * Math.sqrt(2);
       const initialHealth = 100;
-      const defaultMissileRadius = 5;
+      const defaultMissileRadius = 10; // 기본 반지름의 2배로 설정
 
       function Tank(type, skills, skillKeys) {
         this.type = type;
@@ -62,6 +62,7 @@
         this.doubleAttack = false;
         this.increasedRange = false;
         this.sizeMultiplier = 1;
+        this.health = initialHealth;
       }
 
       // 공격스킬 : chance (2회발사가능), big (포탄의 크기 증가), damage (공격력 증가), area (상대 피해범위 증가)
@@ -71,11 +72,23 @@
       const selectedTank2 = localStorage.getItem("user2");
 
       const tankImages = {
-        Tank1: "./picture/pinkTank.png",
-        Tank2: "./picture/blueTank.png",
-        Tank3: "./picture/greenTank.png",
-        Tank4: "./picture/brownTank.png",
+        Tank1: "./picture/Tank/pinkTank.png",
+        Tank2: "./picture/Tank/blueTank.png",
+        Tank3: "./picture/Tank/greenTank.png",
+        Tank4: "./picture/Tank/brownTank.png",
       };
+
+      const skillImages = {
+        chance: new Image(),
+        big: new Image(),
+        damage: new Image(),
+        area: new Image(),
+      };
+
+      skillImages.chance.src = "./picture/BackGround/intro.jpg";
+      skillImages.big.src = "./picture/BackGround/intro.jpg";
+      skillImages.damage.src = "./picture/BackGround/intro.jpg";
+      skillImages.area.src = "./picture/BackGround/intro.jpg";
 
       const tank1BodyImg = new Image();
       tank1BodyImg.src = tankImages[selectedTank1];
@@ -84,35 +97,65 @@
       tank2BodyImg.src = tankImages[selectedTank2];
 
       const cannonImage = new Image();
-      cannonImage.src = "./picture/cannon2Image.png"; // 고정된 포신 이미지
+      cannonImage.src = "./picture/Tank/cannon2Image.png"; // 고정된 포신 이미지
 
-      // Player 1
-      let player1Tank = new Tank(
-        "userLeft",
-        ["chance", "big", "damage"],
-        ["1", "2", "3"]
-      );
+      let player1Tank;
+      let player2Tank;
+      let i = 0;
+
+      const tankSkills = {
+        Tank1: {
+          skills: ["chance", "big", "damage"],
+        },
+        Tank2: {
+          skills: ["big", "chance", "area"],
+        },
+        Tank3: {
+          skills: ["big", "damage", "chance"],
+        },
+        Tank4: {
+          skills: ["chance", "big", "area"],
+        },
+      };
+      const playerKey = {
+        P1: {
+          skillKeys: ["1", "2", "3"],
+        },
+        P2: {
+          skillKeys: ["8", "9", "0"],
+        },
+      };
+
+      if (selectedTank1 && tankSkills[selectedTank1]) {
+        player1Tank = new Tank(
+          `userLeft`,
+          tankSkills[selectedTank1].skills,
+          playerKey.P1.skillKeys
+        );
+      }
+
+      if (selectedTank2 && tankSkills[selectedTank2]) {
+        player2Tank = new Tank(
+          `userRight`,
+          tankSkills[selectedTank2].skills,
+          playerKey.P2.skillKeys
+        );
+      }
+
       let tank1X = 0;
       let tank1CenterX;
       let tank1CenterY;
       let cannon1Angle = Math.PI / 4;
       let tank1LeftPressed = false;
       let tank1RightPressed = false;
-      let player1Health = initialHealth;
 
       // Player 2
-      let player2Tank = new Tank(
-        "userRight",
-        ["damage", "big", "area"],
-        ["8", "9", "0"]
-      );
       let tank2X = width - tankWidth;
       let tank2CenterX;
       let tank2CenterY;
       let cannon2Angle = (3 * Math.PI) / 4;
       let tank2LeftPressed = false;
       let tank2RightPressed = false;
-      let player2Health = initialHealth;
 
       let missileRadius = defaultMissileRadius;
       let missileX;
@@ -194,7 +237,7 @@
           tank1CenterX,
           tank1CenterY,
           cannon1Angle,
-          player1Health,
+          player1Tank.health,
           player1Tank.sizeMultiplier,
           tank1BodyImg
         );
@@ -203,7 +246,7 @@
           tank2CenterX,
           tank2CenterY,
           cannon2Angle,
-          player2Health,
+          player2Tank.health,
           player2Tank.sizeMultiplier,
           tank2BodyImg
         );
@@ -229,12 +272,12 @@
               (player2Tank.increasedRange ? 2 * tankHeight : tankHeight) *
                 player1Tank.sizeMultiplier
         ) {
-          player1Health -= 20 * player2Tank.damageMultiplier;
+          player1Tank.health -= 20 * player2Tank.damageMultiplier;
           isFired = false;
-          if (player1Health <= 0) {
-            clearInterval(intervalId);
-            alert("Player 2 wins!");
-            location.reload();
+          if (player1Tank.health <= 0) {
+            window.location.href = "ending.html"; // 게임 종료 후 ending.html로 이동
+            const winner = "player2";
+            localStorage.setItem("winner", winner);
           } else {
             handleMissileEnd();
           }
@@ -253,12 +296,12 @@
               (player1Tank.increasedRange ? 2 * tankHeight : tankHeight) *
                 player2Tank.sizeMultiplier
         ) {
-          player2Health -= 20 * player1Tank.damageMultiplier;
+          player2Tank.health -= 20 * player1Tank.damageMultiplier;
           isFired = false;
-          if (player2Health <= 0) {
-            clearInterval(intervalId);
-            alert("Player 1 wins!");
-            location.reload();
+          if (player2Tank.health <= 0) {
+            window.location.href = "ending.html"; // 게임 종료 후 ending.html로 이동
+            const winner = "player1";
+            localStorage.setItem("winner", winner);
           } else {
             handleMissileEnd();
           }
@@ -321,9 +364,11 @@
           currentPlayer === 1
             ? tank1CenterY - cannonLength
             : tank2CenterY - cannonLength;
+        ctx.lineWidth = 3; // 굵기를 3배로 설정
         ctx.beginPath();
         ctx.arc(centerX, centerY, gaugeBarRadius, Math.PI, gauge, false);
         ctx.stroke();
+        ctx.lineWidth = 1; // 굵기를 기본값으로 되돌림
       };
 
       const drawTank = (
@@ -355,28 +400,56 @@
       };
 
       const drawPlayerStatus = () => {
+        const barWidth = 200;
+        const barHeight = 20;
+
         ctx.font = "20px Arial";
         ctx.fillStyle = "black";
-        ctx.fillText(`Player 1 HP: ${player1Health}`, 20, 30);
-        ctx.fillText(`Player 2 HP: ${player2Health}`, width - 150, 30);
 
-        drawPlayerItems(player1Tank, 20, 50);
-        drawPlayerItems(player2Tank, width - 150, 50);
+        // Player 1 HP
+        ctx.fillStyle = "red";
+        ctx.fillRect(
+          20,
+          40,
+          barWidth * (player1Tank.health / initialHealth),
+          barHeight
+        );
+        ctx.strokeRect(20, 40, barWidth, barHeight);
+
+        // Player 2 HP
+        ctx.fillStyle = "red";
+        ctx.fillRect(
+          width - 20 - barWidth, // Adjusted to fit within canvas
+          40,
+          barWidth * (player2Tank.health / initialHealth),
+          barHeight
+        );
+        ctx.strokeRect(width - 20 - barWidth, 40, barWidth, barHeight);
+
+        drawPlayerItems(player1Tank, 20, 70);
+        drawPlayerItems(player2Tank, width - 20 - barWidth, 70);
       };
 
       const drawPlayerItems = (tank, startX, startY) => {
         const skills = tank.skills.slice(0, 3); // 3개의 칸만 표시
+        const itemSize = 60; // 아이템 크기를 2배로 증가
+        const itemSpacing = 10; // 아이템 사이의 간격
         skills.forEach((skill, index) => {
+          const x = startX + index * (itemSize + itemSpacing);
+          const y = startY;
+
           ctx.fillStyle = tank.skillAvailable[skill]
             ? "rgba(0, 0, 0, 1)"
             : "rgba(0, 0, 0, 0.5)";
-          ctx.fillRect(startX + index * 40, startY, 30, 30);
-          ctx.fillStyle = "white";
-          ctx.fillText(
-            skill[0].toUpperCase(),
-            startX + index * 40 + 10,
-            startY + 20
-          );
+          ctx.fillRect(x, y, itemSize, itemSize);
+
+          if (!tank.skillAvailable[skill]) {
+            ctx.globalAlpha = 0.5; // 이미지 투명도 조정
+          }
+
+          ctx.drawImage(skillImages[skill], x, y, itemSize, itemSize);
+
+          ctx.globalAlpha = 1.0; // 이미지 투명도 초기화
         });
       };
 
