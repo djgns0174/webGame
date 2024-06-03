@@ -8,7 +8,7 @@
     <style>
       @font-face {
         font-family: "MyFont";
-        src: url("./cruiser_fortress/cruiserfortress3d.ttf");
+        src: url("./cruiser_fortress/cruiserfortress.ttf");
       }
       body,
       html {
@@ -68,7 +68,7 @@
 
             var background = new Image();
             background.src = "./picture/BackGround/intro.jpg";
-
+            var clickSound = new Audio("./sound/click.mp3");
             function drawRoundedRect(x, y, width, height, radius) {
               ctx.beginPath();
               ctx.moveTo(x + radius, y);
@@ -89,14 +89,14 @@
             }
 
             function drawButton(x, y, width, height, radius, text, isPressed) {
-              ctx.fillStyle = isPressed ? "#888888" : "#A9A9A9";
+              ctx.fillStyle = isPressed ? "#A0522D" : "#8B0000";
               drawRoundedRect(x, y, width, height, radius);
               ctx.fill();
               ctx.strokeStyle = "#000";
-              ctx.lineWidth = 2;
+              ctx.lineWidth = 4;
               ctx.stroke();
 
-              ctx.fillStyle = "#fff";
+              ctx.fillStyle = "#EEE8AA";
               ctx.font = "35px 'MyFont'";
               ctx.textAlign = "center";
               ctx.textBaseline = "middle";
@@ -106,9 +106,9 @@
             background.onload = function () {
               ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-              drawButton(800, 300, 400, 80, 20, "Keyboard", false);
-              drawButton(800, 400, 400, 80, 20, "Mode", false);
-              drawButton(800, 500, 400, 80, 20, "Back", false);
+              drawButton(800, 300, 400, 80, 0, "Keyboard", false);
+              drawButton(800, 400, 400, 80, 0, "Mode", false);
+              drawButton(800, 500, 400, 80, 0, "Back", false);
             };
 
             let isKeyboardPressed = false;
@@ -121,25 +121,28 @@
 
               if (x > 800 && x < 1200 && y > 300 && y < 380) {
                 isKeyboardPressed = true;
+                clickSound.play();
                 ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-                drawButton(800, 300, 400, 80, 20, "Keyboard", true);
-                drawButton(800, 400, 400, 80, 20, "Mode", false);
-                drawButton(800, 500, 400, 80, 20, "Back", false);
+                drawButton(800, 300, 400, 80, 0, "Keyboard", true);
+                drawButton(800, 400, 400, 80, 0, "Mode", false);
+                drawButton(800, 500, 400, 80, 0, "Back", false);
               }
               if (x > 800 && x < 1200 && y > 400 && y < 480) {
                 isModePressed = true;
+                clickSound.play();
                 ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-                drawButton(800, 300, 400, 80, 20, "Keyboard", false);
-                drawButton(800, 400, 400, 80, 20, "Mode", true);
-                drawButton(800, 500, 400, 80, 20, "Back", false);
+                drawButton(800, 300, 400, 80, 0, "Keyboard", false);
+                drawButton(800, 400, 400, 80, 0, "Mode", true);
+                drawButton(800, 500, 400, 80, 0, "Back", false);
               }
 
               if (x > 800 && x < 1200 && y > 500 && y < 580) {
                 isBackPressed = true;
+                clickSound.play();
                 ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-                drawButton(800, 300, 400, 80, 20, "Keyboard", false);
-                drawButton(800, 400, 400, 80, 20, "Mode", false);
-                drawButton(800, 500, 400, 80, 20, "Back", true);
+                drawButton(800, 300, 400, 80, 0, "Keyboard", false);
+                drawButton(800, 400, 400, 80, 0, "Mode", false);
+                drawButton(800, 500, 400, 80, 0, "Back", true);
               }
             });
 
@@ -153,9 +156,9 @@
                 }
                 isKeyboardPressed = false;
                 ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-                drawButton(800, 300, 400, 80, 20, "Keyboard", false);
-                drawButton(800, 400, 400, 80, 20, "Mode", false);
-                drawButton(800, 500, 400, 80, 20, "Back", false);
+                drawButton(800, 300, 400, 80, 0, "Keyboard", false);
+                drawButton(800, 400, 400, 80, 0, "Mode", false);
+                drawButton(800, 500, 400, 80, 0, "Back", false);
               }
 
               if (isModePressed) {
@@ -164,9 +167,9 @@
                 }
                 isModePressed = false;
                 ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-                drawButton(800, 300, 400, 80, 20, "Keyboard", false);
-                drawButton(800, 400, 400, 80, 20, "Mode", false);
-                drawButton(800, 500, 400, 80, 20, "Back", false);
+                drawButton(800, 300, 400, 80, 0, "Keyboard", false);
+                drawButton(800, 400, 400, 80, 0, "Mode", false);
+                drawButton(800, 500, 400, 80, 0, "Back", false);
               }
 
               if (isBackPressed) {
@@ -175,9 +178,9 @@
                 }
                 isBackPressed = false;
                 ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-                drawButton(800, 300, 400, 80, 20, "Keyboard", false);
-                drawButton(800, 400, 400, 80, 20, "Mode", false);
-                drawButton(800, 500, 400, 80, 20, "Back", false);
+                drawButton(800, 300, 400, 80, 0, "Keyboard", false);
+                drawButton(800, 400, 400, 80, 0, "Mode", false);
+                drawButton(800, 500, 400, 80, 0, "Back", false);
               }
             });
 

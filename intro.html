@@ -8,7 +8,7 @@
     <style>
       @font-face {
         font-family: "MyFont";
-        src: url("./cruiser_fortress/cruiserfortress3d.ttf");
+        src: url("./cruiser_fortress/cruiserfortress.ttf");
       }
       body,
       html {
@@ -44,18 +44,26 @@
             var background = new Image();
             background.src = "./picture/BackGround/intro.jpg"; // 이미지 URL을 설정하세요
 
+            // 효과음 로드
+            var clickSound = new Audio("./sound/click.mp3"); // 효과음 파일 경로를 설정하세요
+
+            // 배경음악 로드
+            var bgMusic = new Audio("./sounds/background.mp3"); // 배경음악 파일 경로를 설정하세요
+            bgMusic.loop = true; // 배경음악 반복 재생
+            bgMusic.play(); // 배경음악 재생
+
             // 버튼 스타일
             function drawButton(x, y, width, height, radius, text, isPressed) {
               // 버튼 배경
-              ctx.fillStyle = isPressed ? "#888888" : "#A9A9A9";
+              ctx.fillStyle = isPressed ? "#A0522D" : "#8B0000";
               drawRoundedRect(x, y, width, height, radius);
               ctx.fill();
               ctx.strokeStyle = "#000";
-              ctx.lineWidth = 2;
+              ctx.lineWidth = 4;
               ctx.stroke();
 
               // 버튼 텍스트
-              ctx.fillStyle = "#fff";
+              ctx.fillStyle = "#EEE8AA";
               ctx.font = "35px 'MyFont'";
               ctx.textAlign = "center";
               ctx.textBaseline = "middle";
@@ -86,8 +94,8 @@
               ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
               // 버튼 그리기
-              drawButton(800, 200, 400, 80, 20, "Game Start", false);
-              drawButton(800, 350, 400, 80, 20, "Manual", false);
+              drawButton(800, 200, 400, 80, 0, "Game Start", false);
+              drawButton(800, 350, 400, 80, 0, "Manual", false);
             };
 
             let isGameStartPressed = false;
@@ -101,17 +109,19 @@
               // 게임 시작 버튼 클릭
               if (x > 800 && x < 1200 && y > 200 && y < 280) {
                 isGameStartPressed = true;
+                clickSound.play(); // 효과음 재생
                 ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-                drawButton(800, 200, 400, 80, 20, "Game Start", true);
-                drawButton(800, 350, 400, 80, 20, "Manual", false);
+                drawButton(800, 200, 400, 80, 0, "Game Start", true);
+                drawButton(800, 350, 400, 80, 0, "Manual", false);
               }
 
               // 게임 방법 버튼 클릭
               if (x > 800 && x < 1200 && y > 350 && y < 430) {
                 isManualPressed = true;
+                clickSound.play(); // 효과음 재생
                 ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-                drawButton(800, 200, 400, 80, 20, "Game Start", false);
-                drawButton(800, 350, 400, 80, 20, "Manual", true);
+                drawButton(800, 200, 400, 80, 0, "Game Start", false);
+                drawButton(800, 350, 400, 80, 0, "Manual", true);
               }
             });
 
@@ -142,8 +152,8 @@
               isGameStartPressed = false;
               isManualPressed = false;
               ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-              drawButton(800, 200, 400, 80, 20, "Game Start", false);
-              drawButton(800, 350, 400, 80, 20, "Manual", false);
+              drawButton(800, 200, 400, 80, 0, "Game Start", false);
+              drawButton(800, 350, 400, 80, 0, "Manual", false);
             });
           })
           .catch(function (error) {
