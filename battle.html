@@ -31,7 +31,6 @@
       let intervalId;
 
       backgroundImage.onload = function () {
-        console.log("Image loaded");
         start(); // 게임 시작
       };
 
@@ -45,7 +44,7 @@
       const cannonAngleDIF = Math.PI / 60;
       const cannonLength = 100 * Math.sqrt(2);
       const initialHealth = 100;
-      const defaultMissileRadius = 10; // 기본 반지름의 2배로 설정
+      const defaultMissileRadius = 40; // 기본 반지름의 2배로 설정
 
       function Tank(type, skills, skillKeys) {
         this.type = type;
@@ -169,6 +168,8 @@
       let missileDx;
       let missileDy;
       const GRAVITY_ACCELERATION = 0.098;
+      let player1Time = 30;
+      let player2Time = 30;
 
       let currentPlayer = 1; // 1: Player 1, 2: Player 2
       let currentPlayerShots = 1; // 기본 1회 공격
@@ -232,6 +233,10 @@
           missileY = missileY - missileDy;
         }
         checkMissile();
+
+        drawTime();
+        countTime();
+
         drawTank(
           tank1X,
           tank1CenterX,
@@ -252,6 +257,49 @@
         );
         drawMissile();
       };
+
+      const drawTime = () => {
+        ctx.font = "80px Arial";
+        ctx.fillStyle = "white";
+        
+        // 플레이어 1의 시간 표시
+        ctx.fillText(`${player1Time}`, 20, 200);
+
+        // 플레이어 2의 시간 표시
+        ctx.fillText(`${player2Time}`, width - 100, 200);
+      }
+
+      const countTime = () => { 
+      if (currentPlayer === 1) {
+        setInterval(() => { // 1초마다 실행
+            player1Time--; // 플레이어 1의 시간 감소
+            if (player1Time === 0) {
+                switchPlayer(); // 시간이 0이 되면 턴 전환
+            }
+        }, 1000); // 1초
+      }
+
+      else{
+        setInterval(() => { // 1초마다 실행
+            player2Time--; // 플레이어 1의 시간 감소
+            if (player2Time === 0) {
+                switchPlayer(); // 시간이 0이 되면 턴 전환
+            }
+        }, 1000000); // 1초
+      }
+};
+
+
+      const collisionImg = new Image();
+      collisionImg.src = "./picture/Tank/collision.png";
+      const drawcollisionImg = () => {
+            ctx.drawImage(collisionImg, missileX - collisionImg.width / 2, missileY - collisionImg.height / 2);
+
+            setTimeout(() => {
+              ctx.clearRect(missileX - collisionImg.width / 2, missileY - collisionImg.height / 2, collisionImg.width, collisionImg.height);
+              
+            }, 3000);
+          };
 
       const checkMissile = () => {
         // canvas 왼쪽, 오른쪽, 아래 벽에 닿으면
@@ -274,6 +322,13 @@
         ) {
           player1Tank.health -= 20 * player2Tank.damageMultiplier;
           isFired = false;
+          
+          collisionImg.onload = drawcollisionImg;
+
+          if (collisionImg.complete) {
+            drawcollisionImg(); //이미 로드되었으면
+          }
+
           if (player1Tank.health <= 0) {
             window.location.href = "ending.html"; // 게임 종료 후 ending.html로 이동
             const winner = "player2";
@@ -298,6 +353,12 @@
         ) {
           player2Tank.health -= 20 * player1Tank.damageMultiplier;
           isFired = false;
+          collisionImg.onload = drawcollisionImg;
+
+          if (collisionImg.complete) {
+            drawcollisionImg(); //이미 로드되었으면
+          }
+
           if (player2Tank.health <= 0) {
             window.location.href = "ending.html"; // 게임 종료 후 ending.html로 이동
             const winner = "player1";
@@ -321,6 +382,7 @@
 
       const switchPlayer = () => {
         currentPlayer = currentPlayer === 1 ? 2 : 1;
+        player1Time = 30; player2Time = 30; //시간 초기화
         isFired = false;
         isCharging = false;
         gauge = Math.PI;
@@ -351,11 +413,21 @@
       };
 
       const drawMissile = () => {
-        ctx.beginPath();
-        ctx.arc(missileX, missileY, missileRadius, 0, Math.PI * 2);
-        ctx.fillStyle = "blue";
-        ctx.fill();
-        ctx.closePath();
+        const image = new Image();
+        image.src = "./picture/Tank/missile.png";
+        
+        image.onload = () => {
+            ctx.save(); // Save the current state
+            ctx.beginPath();
+            ctx.arc(missileX, missileY, missileRadius, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.clip(); // Clip to the circle path
+            
+            // Draw the image
+            ctx.drawImage(image, missileX - missileRadius, missileY - missileRadius, missileRadius * 2, missileRadius * 2);
+            
+            ctx.restore(); // Restore the previous state
+        };
       };
 
       const drawGausing = () => {
@@ -364,9 +436,10 @@
           currentPlayer === 1
             ? tank1CenterY - cannonLength
             : tank2CenterY - cannonLength;
-        ctx.lineWidth = 3; // 굵기를 3배로 설정
+        ctx.lineWidth = 10; // 굵기를 3배로 설정
+        ctx.strokeStyle = "red"; // 색상을 빨간색으로 설정
         ctx.beginPath();
-        ctx.arc(centerX, centerY, gaugeBarRadius, Math.PI, gauge, false);
+        ctx.arc(centerX, centerY + 60, gaugeBarRadius, Math.PI, gauge, false);
         ctx.stroke();
         ctx.lineWidth = 1; // 굵기를 기본값으로 되돌림
       };
@@ -474,9 +547,9 @@
           } else if (key === "ArrowRight") {
             tank2RightPressed = true;
           } else if (key === "ArrowUp" && cannon2Angle <= Math.PI) {
-            cannon2Angle += cannonAngleDIF;
-          } else if (key === "ArrowDown" && cannon2Angle >= 0) {
             cannon2Angle -= cannonAngleDIF;
+          } else if (key === "ArrowDown" && cannon2Angle >= 0) {
+            cannon2Angle += cannonAngleDIF;
           }
         }
 
