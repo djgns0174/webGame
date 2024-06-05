@@ -70,11 +70,17 @@
       const selectedTank1 = localStorage.getItem("user1");
       const selectedTank2 = localStorage.getItem("user2");
 
-      const tankImages = {
+      const tank1Images = {
         Tank1: "./picture/Tank/pinkTank.png",
         Tank2: "./picture/Tank/blueTank.png",
         Tank3: "./picture/Tank/greenTank.png",
         Tank4: "./picture/Tank/brownTank.png",
+      };
+      const tank2Images = {
+        Tank1: "./picture/Tank/pinkTank2.png",
+        Tank2: "./picture/Tank/blueTank2.png",
+        Tank3: "./picture/Tank/greenTank2.png",
+        Tank4: "./picture/Tank/brownTank2.png",
       };
 
       const skillImages = {
@@ -90,10 +96,10 @@
       skillImages.area.src = "./picture/BackGround/intro.jpg";
 
       const tank1BodyImg = new Image();
-      tank1BodyImg.src = tankImages[selectedTank1];
+      tank1BodyImg.src = tank1Images[selectedTank1];
 
       const tank2BodyImg = new Image();
-      tank2BodyImg.src = tankImages[selectedTank2];
+      tank2BodyImg.src = tank2Images[selectedTank2];
 
       const cannonImage = new Image();
       cannonImage.src = "./picture/Tank/cannon2Image.png"; // 고정된 포신 이미지
@@ -235,7 +241,7 @@
         checkMissile();
 
         drawTime();
-        countTime();
+        //countTime();
 
         drawTank(
           tank1X,
@@ -261,45 +267,52 @@
       const drawTime = () => {
         ctx.font = "80px Arial";
         ctx.fillStyle = "white";
-        
+
         // 플레이어 1의 시간 표시
-        ctx.fillText(`${player1Time}`, 20, 200);
+        //ctx.fillText(`${player1Time}`, 20, 200);
 
         // 플레이어 2의 시간 표시
-        ctx.fillText(`${player2Time}`, width - 100, 200);
-      }
+        //ctx.fillText(`${player2Time}`, width - 100, 200);
+      };
 
-      const countTime = () => { 
-      if (currentPlayer === 1) {
-        setInterval(() => { // 1초마다 실행
+      const countTime = () => {
+        if (currentPlayer === 1) {
+          setInterval(() => {
+            // 1초마다 실행
             player1Time--; // 플레이어 1의 시간 감소
             if (player1Time === 0) {
-                switchPlayer(); // 시간이 0이 되면 턴 전환
+              switchPlayer(); // 시간이 0이 되면 턴 전환
             }
-        }, 1000); // 1초
-      }
-
-      else{
-        setInterval(() => { // 1초마다 실행
+          }, 1000); // 1초
+        } else {
+          setInterval(() => {
+            // 1초마다 실행
             player2Time--; // 플레이어 1의 시간 감소
             if (player2Time === 0) {
-                switchPlayer(); // 시간이 0이 되면 턴 전환
+              switchPlayer(); // 시간이 0이 되면 턴 전환
             }
-        }, 1000000); // 1초
-      }
-};
-
+          }, 1000000); // 1초
+        }
+      };
 
       const collisionImg = new Image();
       collisionImg.src = "./picture/Tank/collision.png";
       const drawcollisionImg = () => {
-            ctx.drawImage(collisionImg, missileX - collisionImg.width / 2, missileY - collisionImg.height / 2);
+        ctx.drawImage(
+          collisionImg,
+          missileX - collisionImg.width / 2,
+          missileY - collisionImg.height / 2
+        );
 
-            setTimeout(() => {
-              ctx.clearRect(missileX - collisionImg.width / 2, missileY - collisionImg.height / 2, collisionImg.width, collisionImg.height);
-              
-            }, 3000);
-          };
+        setTimeout(() => {
+          ctx.clearRect(
+            missileX - collisionImg.width / 2,
+            missileY - collisionImg.height / 2,
+            collisionImg.width,
+            collisionImg.height
+          );
+        }, 3000);
+      };
 
       const checkMissile = () => {
         // canvas 왼쪽, 오른쪽, 아래 벽에 닿으면
@@ -322,7 +335,7 @@
         ) {
           player1Tank.health -= 20 * player2Tank.damageMultiplier;
           isFired = false;
-          
+
           collisionImg.onload = drawcollisionImg;
 
           if (collisionImg.complete) {
@@ -382,7 +395,8 @@
 
       const switchPlayer = () => {
         currentPlayer = currentPlayer === 1 ? 2 : 1;
-        player1Time = 30; player2Time = 30; //시간 초기화
+        player1Time = 30;
+        player2Time = 30; //시간 초기화
         isFired = false;
         isCharging = false;
         gauge = Math.PI;
@@ -415,18 +429,24 @@
       const drawMissile = () => {
         const image = new Image();
         image.src = "./picture/Tank/missile.png";
-        
+
         image.onload = () => {
-            ctx.save(); // Save the current state
-            ctx.beginPath();
-            ctx.arc(missileX, missileY, missileRadius, 0, Math.PI * 2);
-            ctx.closePath();
-            ctx.clip(); // Clip to the circle path
-            
-            // Draw the image
-            ctx.drawImage(image, missileX - missileRadius, missileY - missileRadius, missileRadius * 2, missileRadius * 2);
-            
-            ctx.restore(); // Restore the previous state
+          ctx.save(); // Save the current state
+          ctx.beginPath();
+          ctx.arc(missileX, missileY, missileRadius, 0, Math.PI * 2);
+          ctx.closePath();
+          ctx.clip(); // Clip to the circle path
+
+          // Draw the image
+          ctx.drawImage(
+            image,
+            missileX - missileRadius,
+            missileY - missileRadius,
+            missileRadius * 2,
+            missileRadius * 2
+          );
+
+          ctx.restore(); // Restore the previous state
         };
       };
 

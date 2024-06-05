@@ -8,7 +8,7 @@
     <style>
       @font-face {
         font-family: "MyFont";
-        src: url("./cruiser_fortress/cruiserfortress3d.ttf");
+        src: url("./cruiser_fortress/cruiserfortress.ttf");
       }
       body,
       html {
@@ -41,6 +41,8 @@
 
             var background = new Image();
             background.src = "./picture/BackGround/intro.jpg";
+            // 효과음 로드
+            var clickSound = new Audio("./sound/click.mp3");
 
             var tankImages = [
               new Image(),
@@ -55,14 +57,14 @@
             tankImages[3].src = "./picture/Tank/brownTank.png";
 
             function drawButton(x, y, width, height, radius, text, isPressed) {
-              ctx.fillStyle = isPressed ? "#888888" : "#A9A9A9";
+              ctx.fillStyle = isPressed ? "#A0522D" : "#8B0000";
               drawRoundedRect(x, y, width, height, radius);
               ctx.fill();
               ctx.strokeStyle = "#000";
-              ctx.lineWidth = 2;
+              ctx.lineWidth = 4;
               ctx.stroke();
 
-              ctx.fillStyle = "#fff";
+              ctx.fillStyle = "#EEE8AA";
               ctx.font = "35px 'MyFont'";
               ctx.textAlign = "center";
               ctx.textBaseline = "middle";
@@ -97,11 +99,11 @@
               tankImage,
               isSelected
             ) {
-              ctx.fillStyle = isSelected ? "#666666" : "#A9A9A9";
+              ctx.fillStyle = isSelected ? "#A0522D" : "#8B0000";
               drawRoundedRect(x, y, width, height, radius);
               ctx.fill();
               ctx.strokeStyle = "#000";
-              ctx.lineWidth = 2;
+              ctx.lineWidth = 4;
               ctx.stroke();
 
               // 이미지 비율 유지하여 그리기
@@ -132,7 +134,7 @@
                 100,
                 300,
                 80,
-                20,
+                0,
                 tankImages[0],
                 selectedTank1 === "Tank1"
               );
@@ -141,7 +143,7 @@
                 200,
                 300,
                 80,
-                20,
+                0,
                 tankImages[1],
                 selectedTank1 === "Tank2"
               );
@@ -150,7 +152,7 @@
                 300,
                 300,
                 80,
-                20,
+                0,
                 tankImages[2],
                 selectedTank1 === "Tank3"
               );
@@ -159,7 +161,7 @@
                 400,
                 300,
                 80,
-                20,
+                0,
                 tankImages[3],
                 selectedTank1 === "Tank4"
               );
@@ -169,7 +171,7 @@
                 100,
                 300,
                 80,
-                20,
+                0,
                 tankImages[0],
                 selectedTank2 === "Tank1"
               );
@@ -178,7 +180,7 @@
                 200,
                 300,
                 80,
-                20,
+                0,
                 tankImages[1],
                 selectedTank2 === "Tank2"
               );
@@ -187,7 +189,7 @@
                 300,
                 300,
                 80,
-                20,
+                0,
                 tankImages[2],
                 selectedTank2 === "Tank3"
               );
@@ -196,12 +198,12 @@
                 400,
                 300,
                 80,
-                20,
+                0,
                 tankImages[3],
                 selectedTank2 === "Tank4"
               );
 
-              drawButton(800, 500, 400, 80, 20, "Start", false);
+              drawButton(800, 500, 400, 80, 0, "Start", false);
             }
 
             background.onload = function () {
@@ -216,6 +218,7 @@
               var y = event.pageY - canvas.offsetTop;
 
               if (x > 300 && x < 600) {
+                clickSound.play(); // 효과음 재생
                 if (y > 100 && y < 180)
                   selectedTank1 = selectedTank1 === "Tank1" ? null : "Tank1";
                 if (y > 200 && y < 280)
@@ -224,17 +227,26 @@
                   selectedTank1 = selectedTank1 === "Tank3" ? null : "Tank3";
                 if (y > 400 && y < 480)
                   selectedTank1 = selectedTank1 === "Tank4" ? null : "Tank4";
+                clickSound.play(); // 효과음 재생
               }
 
               if (x > 1400 && x < 1700) {
-                if (y > 100 && y < 180)
+                if (y > 100 && y < 180) {
                   selectedTank2 = selectedTank2 === "Tank1" ? null : "Tank1";
-                if (y > 200 && y < 280)
+                  clickSound.play();
+                } // 효과음 재생
+                if (y > 200 && y < 280) {
                   selectedTank2 = selectedTank2 === "Tank2" ? null : "Tank2";
-                if (y > 300 && y < 380)
+                  clickSound.play();
+                } // 효과음 재생
+                if (y > 300 && y < 380) {
                   selectedTank2 = selectedTank2 === "Tank3" ? null : "Tank3";
-                if (y > 400 && y < 480)
+                  clickSound.play();
+                } // 효과음 재생
+                if (y > 400 && y < 480) {
                   selectedTank2 = selectedTank2 === "Tank4" ? null : "Tank4";
+                  clickSound.play();
+                } // 효과음 재생
               }
 
               if (x > 800 && x < 1200 && y > 500 && y < 580) {
