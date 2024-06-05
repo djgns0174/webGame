@@ -41,7 +41,8 @@
 
             var background = new Image();
             background.src = "./picture/BackGround/intro.jpg";
-            // 효과음 로드
+
+            // 효과음 로드 (전역 변수로 선언)
             var clickSound = new Audio("./sound/click.mp3");
 
             var tankImages = [
@@ -213,12 +214,17 @@
             let selectedTank1 = null;
             let selectedTank2 = null;
 
+            function playClickSound() {
+              clickSound.pause();
+              clickSound.currentTime = 0;
+              clickSound.play();
+            }
+
             canvas.addEventListener("mousedown", function (event) {
               var x = event.pageX - canvas.offsetLeft;
               var y = event.pageY - canvas.offsetTop;
 
               if (x > 300 && x < 600) {
-                clickSound.play(); // 효과음 재생
                 if (y > 100 && y < 180)
                   selectedTank1 = selectedTank1 === "Tank1" ? null : "Tank1";
                 if (y > 200 && y < 280)
@@ -227,32 +233,25 @@
                   selectedTank1 = selectedTank1 === "Tank3" ? null : "Tank3";
                 if (y > 400 && y < 480)
                   selectedTank1 = selectedTank1 === "Tank4" ? null : "Tank4";
-                clickSound.play(); // 효과음 재생
+                playClickSound(); // 효과음 재생
               }
 
               if (x > 1400 && x < 1700) {
-                if (y > 100 && y < 180) {
+                if (y > 100 && y < 180)
                   selectedTank2 = selectedTank2 === "Tank1" ? null : "Tank1";
-                  clickSound.play();
-                } // 효과음 재생
-                if (y > 200 && y < 280) {
+                if (y > 200 && y < 280)
                   selectedTank2 = selectedTank2 === "Tank2" ? null : "Tank2";
-                  clickSound.play();
-                } // 효과음 재생
-                if (y > 300 && y < 380) {
+                if (y > 300 && y < 380)
                   selectedTank2 = selectedTank2 === "Tank3" ? null : "Tank3";
-                  clickSound.play();
-                } // 효과음 재생
-                if (y > 400 && y < 480) {
+                if (y > 400 && y < 480)
                   selectedTank2 = selectedTank2 === "Tank4" ? null : "Tank4";
-                  clickSound.play();
-                } // 효과음 재생
+                playClickSound(); // 효과음 재생
               }
 
               if (x > 800 && x < 1200 && y > 500 && y < 580) {
                 localStorage.setItem("user1", selectedTank1);
                 localStorage.setItem("user2", selectedTank2);
-                window.location.href = "battle.html";
+                window.location.href = "easy_target.html";
               }
 
               redrawScreen();

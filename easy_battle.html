@@ -64,11 +64,37 @@
         this.health = initialHealth;
       }
 
+      const selectedTank1 = localStorage.getItem("user1");
+      const selectedTank2 = localStorage.getItem("user2");
+
+      const tank1shootSound = {
+        Tank1: "./sound/tank/shoot1.mp3",
+        Tank2: "./sound/tank/shoot2.mp3",
+        Tank3: "./sound/tank/shoot3.mp3",
+        Tank4: "./sound/tank/shoot4.mp3",
+      };
+      const tank2shootSound = {
+        Tank1: "./sound/tank/shoot1.mp3",
+        Tank2: "./sound/tank/shoot2.mp3",
+        Tank3: "./sound/tank/shoot3.mp3",
+        Tank4: "./sound/tank/shoot4.mp3",
+      };
+
+      var Tank1Shoot = new Audio();
+      Tank1Shoot.src = tank1shootSound[selectedTank1];
+
+      var Tank2Shoot = new Audio();
+      Tank2Shoot.src = tank2shootSound[selectedTank2];
+
+      var TankDead = new Audio();
+      TankDead.src = "./sound/tank/dead.mp3";
+
+      var TankHit = new Audio();
+      TankHit.src = "./sound/tank/hit2.mp3";
+
       // 공격스킬 : chance (2회발사가능), big (포탄의 크기 증가), damage (공격력 증가), area (상대 피해범위 증가)
 
       // 로컬 스토리지에서 선택된 탱크 로드
-      const selectedTank1 = localStorage.getItem("user1");
-      const selectedTank2 = localStorage.getItem("user2");
 
       const tank1Images = {
         Tank1: "./picture/Tank/pinkTank.png",
@@ -90,10 +116,10 @@
         area: new Image(),
       };
 
-      skillImages.chance.src = "./picture/BackGround/intro.jpg";
-      skillImages.big.src = "./picture/BackGround/intro.jpg";
-      skillImages.damage.src = "./picture/BackGround/intro.jpg";
-      skillImages.area.src = "./picture/BackGround/intro.jpg";
+      skillImages.chance.src = "./picture/Skill/attack/TwiceChance.jpg";
+      skillImages.big.src = "./picture/Skill/attack/BigBomb.jpg";
+      skillImages.damage.src = "./picture/Skill/attack/StrongBomb.jpg";
+      skillImages.area.src = "./picture/Skill/attack/IncreaseTank.jpg";
 
       const tank1BodyImg = new Image();
       tank1BodyImg.src = tank1Images[selectedTank1];
@@ -104,22 +130,25 @@
       const cannonImage = new Image();
       cannonImage.src = "./picture/Tank/cannon2Image.png"; // 고정된 포신 이미지
 
+      const missileImage = new Image();
+      missileImage.src = "./picture/Tank/missile.png"; // 고정된 포신 이미지
+
       let player1Tank;
       let player2Tank;
       let i = 0;
 
       const tankSkills = {
         Tank1: {
-          skills: ["chance", "big", "damage"],
+          skills: ["big", "area", "chance"],
         },
         Tank2: {
-          skills: ["big", "chance", "area"],
+          skills: ["area", "chance", "damage"],
         },
         Tank3: {
-          skills: ["big", "damage", "chance"],
+          skills: ["big", "area", "damage"],
         },
         Tank4: {
-          skills: ["chance", "big", "area"],
+          skills: ["chance", "damage", "big"],
         },
       };
       const playerKey = {
@@ -333,6 +362,8 @@
               (player2Tank.increasedRange ? 2 * tankHeight : tankHeight) *
                 player1Tank.sizeMultiplier
         ) {
+          TankHit.currentTime = 0;
+          TankHit.play();
           player1Tank.health -= 20 * player2Tank.damageMultiplier;
           isFired = false;
 
@@ -343,9 +374,12 @@
           }
 
           if (player1Tank.health <= 0) {
-            window.location.href = "ending.html"; // 게임 종료 후 ending.html로 이동
-            const winner = "player2";
-            localStorage.setItem("winner", winner);
+            TankDead.play();
+            setTimeout(() => {
+              window.location.href = "ending.html"; // 게임 종료 후 ending.html로 이동
+              const winner = "player2";
+              localStorage.setItem("winner", winner);
+            }, 800);
           } else {
             handleMissileEnd();
           }
@@ -364,6 +398,8 @@
               (player1Tank.increasedRange ? 2 * tankHeight : tankHeight) *
                 player2Tank.sizeMultiplier
         ) {
+          TankHit.currentTime = 0;
+          TankHit.play();
           player2Tank.health -= 20 * player1Tank.damageMultiplier;
           isFired = false;
           collisionImg.onload = drawcollisionImg;
@@ -373,9 +409,12 @@
           }
 
           if (player2Tank.health <= 0) {
-            window.location.href = "ending.html"; // 게임 종료 후 ending.html로 이동
-            const winner = "player1";
-            localStorage.setItem("winner", winner);
+            TankDead.play();
+            setTimeout(() => {
+              window.location.href = "ending.html"; // 게임 종료 후 ending.html로 이동
+              const winner = "player1";
+              localStorage.setItem("winner", winner);
+            }, 800);
           } else {
             handleMissileEnd();
           }
@@ -427,27 +466,22 @@
       };
 
       const drawMissile = () => {
-        const image = new Image();
-        image.src = "./picture/Tank/missile.png";
+        ctx.save(); // Save the current state
+        ctx.beginPath();
+        ctx.arc(missileX, missileY, missileRadius, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip(); // Clip to the circle path
 
-        image.onload = () => {
-          ctx.save(); // Save the current state
-          ctx.beginPath();
-          ctx.arc(missileX, missileY, missileRadius, 0, Math.PI * 2);
-          ctx.closePath();
-          ctx.clip(); // Clip to the circle path
+        // Draw the image
+        ctx.drawImage(
+          missileImage,
+          missileX - missileRadius,
+          missileY - missileRadius,
+          missileRadius * 2,
+          missileRadius * 2
+        );
 
-          // Draw the image
-          ctx.drawImage(
-            image,
-            missileX - missileRadius,
-            missileY - missileRadius,
-            missileRadius * 2,
-            missileRadius * 2
-          );
-
-          ctx.restore(); // Restore the previous state
-        };
+        ctx.restore(); // Restore the previous state
       };
 
       const drawGausing = () => {
@@ -595,6 +629,8 @@
             missileDx = missilePower * Math.cos(cannon1Angle);
             missileDy = missilePower * Math.sin(cannon1Angle);
             gauge = Math.PI; // 게이지 초기화
+            Tank1Shoot.currentTime = 0;
+            Tank1Shoot.play(); // 플레이어 1 발사 소리 재생
           }
         } else {
           if (key === "ArrowLeft") {
@@ -608,6 +644,8 @@
             missileDx = missilePower * Math.cos(cannon2Angle);
             missileDy = missilePower * Math.sin(cannon2Angle);
             gauge = Math.PI; // 게이지 초기화
+            Tank2Shoot.currentTime = 0;
+            Tank2Shoot.play(); // 플레이어 2 발사 소리 재생
           }
         }
       };

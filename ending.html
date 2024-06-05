@@ -8,7 +8,7 @@
     <style>
       @font-face {
         font-family: "MyFont";
-        src: url("./cruiser_fortress/cruiserfortress3d.ttf");
+        src: url("./cruiser_fortress/cruiserfortress.ttf");
       }
       body,
       html {
@@ -44,6 +44,9 @@
             var background = new Image();
             background.src = "./picture/BackGround/ending.jpg"; // 이미지 URL을 설정하세요
 
+            // 효과음 로드
+            var clickSound = new Audio("./sound/click.mp3"); // 효과음 파일 경로를 설정하세요
+
             let alpha = 0;
             const fadeInSpeed = 0.005;
             let showRestartButton = false;
@@ -51,40 +54,20 @@
             const buttonFadeInSpeed = 1;
             let isBackgroundFullyVisible = false;
 
-            function drawButton(x, y, width, height, radius, text, isPressed) {
+            function drawButton(x, y, width, height, text, isPressed) {
               // 버튼 배경
-              ctx.fillStyle = isPressed ? "#888888" : "#A9A9A9";
-              drawRoundedRect(x, y, width, height, radius);
-              ctx.fill();
+              ctx.fillStyle = isPressed ? "#A0522D" : "#8B0000";
+              ctx.fillRect(x, y, width, height);
               ctx.strokeStyle = "#000";
-              ctx.lineWidth = 2;
-              ctx.stroke();
+              ctx.lineWidth = 4;
+              ctx.strokeRect(x, y, width, height);
 
               // 버튼 텍스트
-              ctx.fillStyle = "#fff";
+              ctx.fillStyle = "#EEE8AA";
               ctx.font = "35px 'MyFont'";
               ctx.textAlign = "center";
               ctx.textBaseline = "middle";
               ctx.fillText(text, x + width / 2, y + height / 2);
-            }
-
-            function drawRoundedRect(x, y, width, height, radius) {
-              ctx.beginPath();
-              ctx.moveTo(x + radius, y);
-              ctx.lineTo(x + width - radius, y);
-              ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-              ctx.lineTo(x + width, y + height - radius);
-              ctx.quadraticCurveTo(
-                x + width,
-                y + height,
-                x + width - radius,
-                y + height
-              );
-              ctx.lineTo(x + radius, y + height);
-              ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-              ctx.lineTo(x, y + radius);
-              ctx.quadraticCurveTo(x, y, x + radius, y);
-              ctx.closePath();
             }
 
             function draw() {
@@ -105,7 +88,7 @@
                   buttonAlpha += buttonFadeInSpeed;
                 }
                 ctx.globalAlpha = buttonAlpha;
-                drawButton(800, 600, 400, 80, 20, "Restart", false);
+                drawButton(800, 600, 400, 80, "Restart", false);
                 ctx.globalAlpha = 1.0; // 투명도 초기화
               }
             }
@@ -140,8 +123,9 @@
                 y < 680
               ) {
                 isRestartPressed = true;
+                clickSound.play(); // 효과음 재생
                 draw();
-                drawButton(800, 600, 400, 80, 20, "Restart", true);
+                drawButton(800, 600, 400, 80, "Restart", true);
               }
             });
 
@@ -164,7 +148,7 @@
               isRestartPressed = false;
               if (showRestartButton) {
                 draw();
-                drawButton(800, 600, 400, 80, 20, "Restart", false);
+                drawButton(800, 600, 400, 80, "Restart", false);
               }
             });
 
