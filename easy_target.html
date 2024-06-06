@@ -120,6 +120,15 @@
       var TankDead = new Audio();
       TankDead.src = "./sound/tank/dead.mp3";
 
+      var MoveSound = new Audio();
+      MoveSound.src = "./sound/tank/move.mp3"; // 이동 효과음 파일 경로
+
+      var CannonSound = new Audio();
+      CannonSound.src = "./sound/tank/cannon_move.mp3";
+
+      var ClickSound = new Audio();
+      ClickSound.src = "./sound/tank/skillUse.mp3"; // 스킬 사용 클릭 효과음 파일 경로
+
       const tankWidth = 150;
       const tankHeight = 150;
       const tankDx = 3;
@@ -413,6 +422,8 @@
         tank1RightPressed = false;
         tank2LeftPressed = false;
         tank2RightPressed = false;
+        MoveSound.pause();
+        MoveSound.currentTime = 0;
       };
 
       const drawMissile = () => {
@@ -531,22 +542,45 @@
         if (!currentTank.usedSkills[skill]) {
           applySkill(currentTank, opponentTank, skill);
           useSkill(currentTank, skill);
+          ClickSound.currentTime = 0;
+          ClickSound.play(); // 스킬 사용 클릭 소리 재생
         }
       };
+
       const keydownHandler = (event) => {
         if (currentPlayer === 1) {
           if (event.keyCode === 65) {
             // A key
             tank1LeftPressed = true;
+            if (MoveSound.paused) {
+              // 누를 때만 효과음 재생
+              MoveSound.currentTime = 0;
+              MoveSound.play();
+            }
           } else if (event.keyCode === 68) {
             // D key
             tank1RightPressed = true;
+            if (MoveSound.paused) {
+              // 누를 때만 효과음 재생
+              MoveSound.currentTime = 0;
+              MoveSound.play();
+            }
           } else if (event.keyCode === 87 && cannon1Angle <= Math.PI) {
             // W key
             cannon1Angle += cannonAngleDIF;
+            if (CannonSound.paused) {
+              // 누를 때만 효과음 재생
+              CannonSound.currentTime = 0;
+              CannonSound.play();
+            }
           } else if (event.keyCode === 83 && cannon1Angle >= 0) {
             // S key
             cannon1Angle -= cannonAngleDIF;
+            if (CannonSound.paused) {
+              // 누를 때만 효과음 재생
+              CannonSound.currentTime = 0;
+              CannonSound.play();
+            }
           } else if (event.keyCode === 32 && !isFired) {
             isCharging = true;
           } else if (player1Tank.skillKeys.includes(event.key)) {
@@ -555,12 +589,32 @@
         } else if (currentPlayer === 2) {
           if (event.keyCode === 37) {
             tank2LeftPressed = true;
+            if (MoveSound.paused) {
+              // 누를 때만 효과음 재생
+              MoveSound.currentTime = 0;
+              MoveSound.play();
+            }
           } else if (event.keyCode === 39) {
             tank2RightPressed = true;
+            if (MoveSound.paused) {
+              // 누를 때만 효과음 재생
+              MoveSound.currentTime = 0;
+              MoveSound.play();
+            }
           } else if (event.keyCode === 40 && cannon2Angle <= Math.PI) {
             cannon2Angle += cannonAngleDIF;
+            if (CannonSound.paused) {
+              // 누를 때만 효과음 재생
+              CannonSound.currentTime = 0;
+              CannonSound.play();
+            }
           } else if (event.keyCode === 38 && cannon2Angle >= 0) {
             cannon2Angle -= cannonAngleDIF;
+            if (CannonSound.paused) {
+              // 누를 때만 효과음 재생
+              CannonSound.currentTime = 0;
+              CannonSound.play();
+            }
           } else if (event.keyCode === 32 && !isFired) {
             isCharging = true;
           } else if (player2Tank.skillKeys.includes(event.key)) {
@@ -573,8 +627,20 @@
         if (currentPlayer === 1) {
           if (event.keyCode === 65) {
             tank1LeftPressed = false;
+            MoveSound.pause();
+            MoveSound.currentTime = 0;
           } else if (event.keyCode === 68) {
             tank1RightPressed = false;
+            MoveSound.pause();
+            MoveSound.currentTime = 0;
+          } else if (event.keyCode === 87) {
+            // Stop the cannon sound when W key is released
+            CannonSound.pause();
+            CannonSound.currentTime = 0;
+          } else if (event.keyCode === 83) {
+            // Stop the cannon sound when S key is released
+            CannonSound.pause();
+            CannonSound.currentTime = 0;
           } else if (event.keyCode === 32 && isCharging) {
             isCharging = false;
             isFired = true;
@@ -588,8 +654,20 @@
         } else {
           if (event.keyCode === 37) {
             tank2LeftPressed = false;
+            MoveSound.pause();
+            MoveSound.currentTime = 0;
           } else if (event.keyCode === 39) {
             tank2RightPressed = false;
+            MoveSound.pause();
+            MoveSound.currentTime = 0;
+          } else if (event.keyCode === 40) {
+            // Stop the cannon sound when down arrow key is released
+            CannonSound.pause();
+            CannonSound.currentTime = 0;
+          } else if (event.keyCode === 38) {
+            // Stop the cannon sound when up arrow key is released
+            CannonSound.pause();
+            CannonSound.currentTime = 0;
           } else if (event.keyCode === 32 && isCharging) {
             // Space key
             isCharging = false;
