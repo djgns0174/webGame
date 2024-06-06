@@ -92,6 +92,10 @@
       var TankHit = new Audio();
       TankHit.src = "./sound/tank/hit2.mp3";
 
+      // 새로운 이동 효과음 객체 생성
+      var MoveSound = new Audio();
+      MoveSound.src = "./sound/tank/move.mp3"; // 이동 효과음 파일 경로
+
       // 공격스킬 : chance (2회발사가능), big (포탄의 크기 증가), damage (공격력 증가), area (상대 피해범위 증가)
 
       // 로컬 스토리지에서 선택된 탱크 로드
@@ -450,6 +454,8 @@
         tank1RightPressed = false;
         tank2LeftPressed = false;
         tank2RightPressed = false;
+        MoveSound.pause();
+        MoveSound.currentTime = 0;
       };
 
       const resetMultipliers = () => {
@@ -588,8 +594,18 @@
         if (currentPlayer === 1) {
           if (key === "a" || key === "A") {
             tank1LeftPressed = true;
+            if (MoveSound.paused) {
+              // 누를 때만 효과음 재생
+              MoveSound.currentTime = 0;
+              MoveSound.play();
+            }
           } else if (key === "d" || key === "D") {
             tank1RightPressed = true;
+            if (MoveSound.paused) {
+              // 누를 때만 효과음 재생
+              MoveSound.currentTime = 0;
+              MoveSound.play();
+            }
           } else if (key === "w" || (key === "W" && cannon1Angle <= Math.PI)) {
             cannon1Angle += cannonAngleDIF;
           } else if (key === "s" || (key === "S" && cannon1Angle >= 0)) {
@@ -598,8 +614,18 @@
         } else {
           if (key === "ArrowLeft") {
             tank2LeftPressed = true;
+            if (MoveSound.paused) {
+              // 누를 때만 효과음 재생
+              MoveSound.currentTime = 0;
+              MoveSound.play();
+            }
           } else if (key === "ArrowRight") {
             tank2RightPressed = true;
+            if (MoveSound.paused) {
+              // 누를 때만 효과음 재생
+              MoveSound.currentTime = 0;
+              MoveSound.play();
+            }
           } else if (key === "ArrowUp" && cannon2Angle <= Math.PI) {
             cannon2Angle -= cannonAngleDIF;
           } else if (key === "ArrowDown" && cannon2Angle >= 0) {
@@ -620,8 +646,12 @@
         if (currentPlayer === 1) {
           if (key === "a" || key === "A") {
             tank1LeftPressed = false;
+            MoveSound.pause();
+            MoveSound.currentTime = 0;
           } else if (key === "d" || key === "D") {
             tank1RightPressed = false;
+            MoveSound.pause();
+            MoveSound.currentTime = 0;
           } else if (key === " " && isCharging) {
             isCharging = false;
             isFired = true;
@@ -635,8 +665,12 @@
         } else {
           if (key === "ArrowLeft") {
             tank2LeftPressed = false;
+            MoveSound.pause();
+            MoveSound.currentTime = 0;
           } else if (key === "ArrowRight") {
             tank2RightPressed = false;
+            MoveSound.pause();
+            MoveSound.currentTime = 0;
           } else if (key === " " && isCharging) {
             isCharging = false;
             isFired = true;
