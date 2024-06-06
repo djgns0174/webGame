@@ -64,6 +64,7 @@ big : 본인 포탄 크기 증가
    - [x] 3.1 캐릭터 디자인
    - [x] 3.2 캐릭터 고유 색상 및 특성 구현
    - [x] 3.3 캐릭터 움직임 구현
+   - [ ] 3.4 캐릭터 고를 때 마우스 올리면 스킬 보여주기
 
 4. 지형 구현
 
@@ -74,19 +75,10 @@ big : 본인 포탄 크기 증가
 
    - [ ] 5.1 manual_mode.html - battle mode (battle 모드의 개념)
    - [ ] 5.2 manual_mode.html - target mode (target 모드의 개념)
-   - [ ] 5.3 select_tank(easy_battle).html (캐릭터 고유스킬, 스킬 설명) - target mode랑 스킬 조금 다름
-   - [ ] 5.4 select_tank(easy_target).html (캐릭터 고유스킬, 스킬 설명) - battle mode랑 스킬 조금 다름
-   - [ ] 5.5 select_tank(easy_battle).html (캐릭터 고유스킬, 스킬 설명) - html 파일 자체도 아직 만들지도 않음 => hard 모드 구현할 때 만들 예정
-   - [ ] 5.6 select_tank(easy_battle).html (캐릭터 고유스킬, 스킬 설명) - html 파일 자체도 아직 만들지도 않음 => hard 모드 구현할 때 만들 예정
-
-battle 모드
-
-- 공격 스킬: 본인 미사일 크기 증가, 미사일 공격력 강화, 미사일 횟수 2회, 상대 탱크 크기 증가
-- 방어 스킬: 상대 미사일 크기 감소, 이동거리 증가, 체력 회복, 본인 탱크 크기 감소
-
-target 모드
-
-- 스킬 : 본인 미사일 크기 증가, 미사일 점수획득 2배, 미사일 횟수 2회, 타켓 크기 증가
+   - [ ] 5.3 select_tank(easy_battle).html (스킬 설명) - target mode랑 스킬 조금 다름
+   - [ ] 5.4 select_tank(easy_target).html (스킬 설명) - battle mode랑 스킬 조금 다름
+   - [ ] 5.5 select_tank(easy_battle).html (스킬 설명)
+   - [ ] 5.6 select_tank(easy_battle).html (스킬 설명)
 
 6. UX 및 버그 잡기
    - [ ] 5.1 유지보수

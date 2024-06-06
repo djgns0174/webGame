@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Fortress Duels: Dynamic Warfare</title>
+    <style>
+      @font-face {
+        font-family: "MyFont";
+        src: url("./cruiser_fortress/cruiserfortress.ttf");
+      }
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: white;
+      }
+      #gameCanvas {
+        border: 1px solid black;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="gameCanvas" width="2000" height="900"></canvas>
+    <script>
+      window.onload = function () {
+        var canvas = document.getElementById("gameCanvas");
+        var ctx = canvas.getContext("2d");
+
+        document.fonts
+          .load('40px "MyFont"')
+          .then(function () {
+            console.log("Font loaded");
+
+            var background = new Image();
+            background.src = "./picture/BackGround/intro.jpg";
+
+            // 효과음 로드 (전역 변수로 선언)
+            var clickSound = new Audio("./sound/click.mp3");
+
+            var tankImages = [
+              new Image(),
+              new Image(),
+              new Image(),
+              new Image(),
+            ];
+
+            tankImages[0].src = "./picture/Tank/pinkTank.png";
+            tankImages[1].src = "./picture/Tank/blueTank.png";
+            tankImages[2].src = "./picture/Tank/greenTank.png";
+            tankImages[3].src = "./picture/Tank/brownTank.png";
+
+            function drawButton(x, y, width, height, radius, text, isPressed) {
+              ctx.fillStyle = isPressed ? "#A0522D" : "#8B0000";
+              drawRoundedRect(x, y, width, height, radius);
+              ctx.fill();
+              ctx.strokeStyle = "#000";
+              ctx.lineWidth = 4;
+              ctx.stroke();
+
+              ctx.fillStyle = "#EEE8AA";
+              ctx.font = "35px 'MyFont'";
+              ctx.textAlign = "center";
+              ctx.textBaseline = "middle";
+              ctx.fillText(text, x + width / 2, y + height / 2);
+            }
+
+            function drawRoundedRect(x, y, width, height, radius) {
+              ctx.beginPath();
+              ctx.moveTo(x + radius, y);
+              ctx.lineTo(x + width - radius, y);
+              ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+              ctx.lineTo(x + width, y + height - radius);
+              ctx.quadraticCurveTo(
+                x + width,
+                y + height,
+                x + width - radius,
+                y + height
+              );
+              ctx.lineTo(x + radius, y + height);
+              ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+              ctx.lineTo(x, y + radius);
+              ctx.quadraticCurveTo(x, y, x + radius, y);
+              ctx.closePath();
+            }
+
+            function drawTankButton(
+              x,
+              y,
+              width,
+              height,
+              radius,
+              tankImage,
+              isSelected
+            ) {
+              ctx.fillStyle = isSelected ? "#A0522D" : "#8B0000";
+              drawRoundedRect(x, y, width, height, radius);
+              ctx.fill();
+              ctx.strokeStyle = "#000";
+              ctx.lineWidth = 4;
+              ctx.stroke();
+
+              // 이미지 비율 유지하여 그리기
+              var imgWidth = tankImage.width;
+              var imgHeight = tankImage.height;
+              var scale = Math.min(
+                (width - 20) / imgWidth,
+                (height - 20) / imgHeight
+              );
+              var scaledWidth = imgWidth * scale * 1.5;
+              var scaledHeight = imgHeight * scale * 1.5;
+              var offsetX = (width - scaledWidth) / 2;
+              var offsetY = (height - scaledHeight) / 2;
+              ctx.drawImage(
+                tankImage,
+                x + offsetX,
+                y + offsetY,
+                scaledWidth,
+                scaledHeight
+              );
+            }
+
+            function redrawScreen() {
+              ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+
+              drawTankButton(
+                300,
+                100,
+                300,
+                80,
+                0,
+                tankImages[0],
+                selectedTank1 === "Tank1"
+              );
+              drawTankButton(
+                300,
+                200,
+                300,
+                80,
+                0,
+                tankImages[1],
+                selectedTank1 === "Tank2"
+              );
+              drawTankButton(
+                300,
+                300,
+                300,
+                80,
+                0,
+                tankImages[2],
+                selectedTank1 === "Tank3"
+              );
+              drawTankButton(
+                300,
+                400,
+                300,
+                80,
+                0,
+                tankImages[3],
+                selectedTank1 === "Tank4"
+              );
+
+              drawTankButton(
+                1400,
+                100,
+                300,
+                80,
+                0,
+                tankImages[0],
+                selectedTank2 === "Tank1"
+              );
+              drawTankButton(
+                1400,
+                200,
+                300,
+                80,
+                0,
+                tankImages[1],
+                selectedTank2 === "Tank2"
+              );
+              drawTankButton(
+                1400,
+                300,
+                300,
+                80,
+                0,
+                tankImages[2],
+                selectedTank2 === "Tank3"
+              );
+              drawTankButton(
+                1400,
+                400,
+                300,
+                80,
+                0,
+                tankImages[3],
+                selectedTank2 === "Tank4"
+              );
+
+              drawButton(800, 500, 400, 80, 0, "Start", false);
+            }
+
+            background.onload = function () {
+              redrawScreen();
+            };
+
+            let selectedTank1 = null;
+            let selectedTank2 = null;
+
+            function playClickSound() {
+              clickSound.pause();
+              clickSound.currentTime = 0;
+              clickSound.play();
+            }
+
+            canvas.addEventListener("mousedown", function (event) {
+              var x = event.pageX - canvas.offsetLeft;
+              var y = event.pageY - canvas.offsetTop;
+
+              if (x > 300 && x < 600) {
+                if (y > 100 && y < 180)
+                  selectedTank1 = selectedTank1 === "Tank1" ? null : "Tank1";
+                if (y > 200 && y < 280)
+                  selectedTank1 = selectedTank1 === "Tank2" ? null : "Tank2";
+                if (y > 300 && y < 380)
+                  selectedTank1 = selectedTank1 === "Tank3" ? null : "Tank3";
+                if (y > 400 && y < 480)
+                  selectedTank1 = selectedTank1 === "Tank4" ? null : "Tank4";
+                playClickSound(); // 효과음 재생
+              }
+
+              if (x > 1400 && x < 1700) {
+                if (y > 100 && y < 180)
+                  selectedTank2 = selectedTank2 === "Tank1" ? null : "Tank1";
+                if (y > 200 && y < 280)
+                  selectedTank2 = selectedTank2 === "Tank2" ? null : "Tank2";
+                if (y > 300 && y < 380)
+                  selectedTank2 = selectedTank2 === "Tank3" ? null : "Tank3";
+                if (y > 400 && y < 480)
+                  selectedTank2 = selectedTank2 === "Tank4" ? null : "Tank4";
+                playClickSound(); // 효과음 재생
+              }
+
+              if (x > 800 && x < 1200 && y > 500 && y < 580) {
+                localStorage.setItem("user1", selectedTank1);
+                localStorage.setItem("user2", selectedTank2);
+                window.location.href = "hard_battle.html";
+              }
+
+              redrawScreen();
+            });
+          })
+          .catch(function (error) {
+            console.error("Font failed to load:", error);
+          });
+      };
+    </script>
+  </body>
+</html>
