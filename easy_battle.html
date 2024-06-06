@@ -99,8 +99,11 @@
       var CannonSound = new Audio();
       CannonSound.src = "./sound/tank/cannon_move.mp3";
 
-      var ClickSound = new Audio();
-      ClickSound.src = "./sound/tank/skillUse.mp3"; // 스킬 사용 클릭 효과음 파일 경로
+      var ClickSkill = new Audio();
+      ClickSkill.src = "./sound/tank/skillUse.mp3"; // 스킬 사용 클릭 효과음 파일 경로
+
+      var NoHit = new Audio();
+      NoHit.src = "./sound/tank/NoHit.mp3"; // 스킬 사용 클릭 효과음 파일 경로
 
       // 공격스킬 : chance (2회발사가능), big (포탄의d 크기 증가), damage (공격력 증가), area (상대 피해범위 증가)
 
@@ -357,6 +360,8 @@
         // canvas 왼쪽, 오른쪽, 아래 벽에 닿으면
         if (missileX <= 0 || missileX >= width || missileY >= height) {
           handleMissileEnd();
+          NoHit.currentTime = 0;
+          NoHit.play();
         }
 
         // Player 1 명중
@@ -738,8 +743,8 @@
         if (currentTank.skillAvailable[skill]) {
           applySkill(currentTank, opponentTank, skill);
           useSkill(currentTank, skill);
-          ClickSound.currentTime = 0;
-          ClickSound.play(); // 스킬 사용 클릭 소리 재생
+          ClickSkill.currentTime = 0;
+          ClickSkill.play(); // 스킬 사용 클릭 소리 재생
         }
       };
 

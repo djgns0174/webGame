@@ -126,8 +126,11 @@
       var CannonSound = new Audio();
       CannonSound.src = "./sound/tank/cannon_move.mp3";
 
-      var ClickSound = new Audio();
-      ClickSound.src = "./sound/tank/skillUse.mp3"; // 스킬 사용 클릭 효과음 파일 경로
+      var ClickSkill = new Audio();
+      ClickSkill.src = "./sound/tank/skillUse.mp3"; // 스킬 사용 클릭 효과음 파일 경로
+
+      var NoHit = new Audio();
+      NoHit.src = "./sound/tank/NoHit.mp3"; // 스킬 사용 클릭 효과음 파일 경로
 
       const tankWidth = 150;
       const tankHeight = 150;
@@ -371,6 +374,8 @@
           if (currentPlayerShots <= 0) {
             switchPlayer();
           }
+          NoHit.currentTime = 0;
+          NoHit.play();
         }
 
         // Target 명중
@@ -424,6 +429,10 @@
         tank2RightPressed = false;
         MoveSound.pause();
         MoveSound.currentTime = 0;
+        targetHit.currentTime = 0;
+        CannonSound.currentTime = 0;
+        ClickSkill.currentTime = 0;
+        NoHit.currentTime = 0;
       };
 
       const drawMissile = () => {
@@ -542,8 +551,8 @@
         if (!currentTank.usedSkills[skill]) {
           applySkill(currentTank, opponentTank, skill);
           useSkill(currentTank, skill);
-          ClickSound.currentTime = 0;
-          ClickSound.play(); // 스킬 사용 클릭 소리 재생
+          ClickSkill.currentTime = 0;
+          ClickSkill.play(); // 스킬 사용 클릭 소리 재생
         }
       };
 
