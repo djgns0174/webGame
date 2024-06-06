@@ -56,10 +56,6 @@
           chance: true,
           big: true,
           area: true,
-          damage: true,
-          chance: true,
-          big: true,
-          area: true,
           small: true,
           decrease: true,
           move: true,
@@ -71,8 +67,10 @@
         this.increasedRange = false;
         this.sizeMultiplier = 1;
         this.health = initialHealth;
-        this.health = initialHealth;
-        this.moveMultiplier = 1;
+        this.moveDistanceMultiplier = 1;
+        this.nextMoveDistanceMultiplier = 1;
+        this.nextMissileRadiusMultiplier = 1;
+        this.nextSizeMultiplier = 1;
       }
 
       const selectedTank1 = localStorage.getItem("user1");
@@ -115,10 +113,6 @@
 
       var NoHit = new Audio();
       NoHit.src = "./sound/tank/NoHit.mp3"; // 스킬 사용 클릭 효과음 파일 경로
-
-      // 공격스킬 : chance (2회발사가능), big (포탄의d 크기 증가), damage (공격력 증가), area (상대 피해범위 증가)
-
-      // 로컬 스토리지에서 선택된 탱크 로드
 
       const tank1Images = {
         Tank1: "./picture/Tank/pinkTank.png",
@@ -168,6 +162,20 @@
       let player1Tank;
       let player2Tank;
       let i = 0;
+
+      // 공격스킬
+
+      // area : 상대 탱크 크기 증가
+      // chance : 2회 기회
+      // damage : 공격력 2배
+      // big : 본인 포탄 크기 증가
+
+      // 방어스킬
+
+      // small : 다음 턴에 상대 미사일 크기 감소
+      // decrease : 다음 턴에 내 탱크 크기 감소
+      // move : 이동거리 2배 증가
+      // hp : 체력 50 회복
 
       const tankSkills = {
         Tank1: {
@@ -259,7 +267,8 @@
         if (
           tank1LeftPressed &&
           tank1X > 0 &&
-          tank1MoveDistance < maxMoveDistance
+          tank1MoveDistance <
+            maxMoveDistance * player1Tank.moveDistanceMultiplier
         ) {
           tank1X -= tankDx;
           tank1MoveDistance += tankDx;
@@ -267,7 +276,8 @@
         if (
           tank1RightPressed &&
           tank1X + tankWidth * player1Tank.sizeMultiplier < width &&
-          tank1MoveDistance < maxMoveDistance
+          tank1MoveDistance <
+            maxMoveDistance * player1Tank.moveDistanceMultiplier
         ) {
           tank1X += tankDx;
           tank1MoveDistance += tankDx;
@@ -276,7 +286,8 @@
         if (
           tank2LeftPressed &&
           tank2X > 0 &&
-          tank2MoveDistance < maxMoveDistance
+          tank2MoveDistance <
+            maxMoveDistance * player2Tank.moveDistanceMultiplier
         ) {
           tank2X -= tankDx;
           tank2MoveDistance += tankDx;
@@ -284,7 +295,8 @@
         if (
           tank2RightPressed &&
           tank2X + tankWidth * player2Tank.sizeMultiplier < width &&
-          tank2MoveDistance < maxMoveDistance
+          tank2MoveDistance <
+            maxMoveDistance * player2Tank.moveDistanceMultiplier
         ) {
           tank2X += tankDx;
           tank2MoveDistance += tankDx;
@@ -491,7 +503,16 @@
         gauge = Math.PI;
         tank1MoveDistance = 0; // Reset move distance for Player 1
         tank2MoveDistance = 0; // Reset move distance for Player 2
-
+        player1Tank.moveDistanceMultiplier =
+          player1Tank.nextMoveDistanceMultiplier; // 적용된 스킬 해제
+        player2Tank.moveDistanceMultiplier =
+          player2Tank.nextMoveDistanceMultiplier; // 적용된 스킬 해제
+        player1Tank.missileRadiusMultiplier =
+          player1Tank.nextMissileRadiusMultiplier; // 적용된 스킬 해제
+        player2Tank.missileRadiusMultiplier =
+          player2Tank.nextMissileRadiusMultiplier; // 적용된 스킬 해제
+        player1Tank.sizeMultiplier = player1Tank.nextSizeMultiplier; // 적용된 스킬 해제
+        player2Tank.sizeMultiplier = player2Tank.nextSizeMultiplier; // 적용된 스킬 해제
         resetKeys();
         resetMultipliers();
         shotsFired = 0;
@@ -510,14 +531,16 @@
       const resetMultipliers = () => {
         player1Tank.damageMultiplier = 1;
         player2Tank.damageMultiplier = 1;
-        player1Tank.missileRadiusMultiplier = 1;
-        player2Tank.missileRadiusMultiplier = 1;
         player1Tank.increasedRange = false;
         player2Tank.increasedRange = false;
         player1Tank.doubleAttack = false;
         player2Tank.doubleAttack = false;
-        player1Tank.sizeMultiplier = 1;
-        player2Tank.sizeMultiplier = 1;
+        player1Tank.nextMoveDistanceMultiplier = 1;
+        player2Tank.nextMoveDistanceMultiplier = 1;
+        player1Tank.nextMissileRadiusMultiplier = 1;
+        player2Tank.nextMissileRadiusMultiplier = 1;
+        player1Tank.nextSizeMultiplier = 1;
+        player2Tank.nextSizeMultiplier = 1;
       };
 
       const drawMissile = () => {
@@ -576,6 +599,7 @@
         // 포신 이미지 회전 및 그리기
         ctx.save();
         ctx.translate(tankCenterX, tankCenterY);
+        ctx.scale(sizeMultiplier, sizeMultiplier); // 포신 크기 조정
         ctx.rotate(-cannonAngle); // 캔버스의 y축이 아래쪽을 향하므로 -를 붙임
         ctx.drawImage(cannonImage, 15, -25, 100, 70);
         ctx.restore();
@@ -769,6 +793,17 @@
         } else if (skill === "area") {
           opponentTank.increasedRange = true;
           opponentTank.sizeMultiplier = 2; // 상대 탱크 크기 증가
+        } else if (skill === "small") {
+          opponentTank.nextMissileRadiusMultiplier = 0.5; // 상대 미사일 크기 감소
+        } else if (skill === "decrease") {
+          currentTank.nextSizeMultiplier = 0.5; // 다음 상대 턴에 본인 탱크 크기 감소
+        } else if (skill === "move") {
+          currentTank.moveDistanceMultiplier = 2; // 이동 거리 증가
+        } else if (skill === "hp") {
+          currentTank.health += 50; // HP 증가
+          if (currentTank.health > initialHealth) {
+            currentTank.health = initialHealth; // 최대 HP 제한
+          }
         }
       };
 
