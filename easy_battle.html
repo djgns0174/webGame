@@ -45,6 +45,7 @@
       const cannonLength = 100 * Math.sqrt(2);
       const initialHealth = 100;
       const defaultMissileRadius = 40; // 기본 반지름의 2배로 설정
+      const maxMoveDistance = 300;
 
       function Tank(type, skills, skillKeys) {
         this.type = type;
@@ -55,6 +56,14 @@
           chance: true,
           big: true,
           area: true,
+          damage: true,
+          chance: true,
+          big: true,
+          area: true,
+          small: true,
+          decrease: true,
+          move: true,
+          hp: true,
         };
         this.damageMultiplier = 1;
         this.missileRadiusMultiplier = 1;
@@ -62,6 +71,8 @@
         this.increasedRange = false;
         this.sizeMultiplier = 1;
         this.health = initialHealth;
+        this.health = initialHealth;
+        this.moveMultiplier = 1;
       }
 
       const selectedTank1 = localStorage.getItem("user1");
@@ -127,12 +138,20 @@
         big: new Image(),
         damage: new Image(),
         area: new Image(),
+        small: new Image(),
+        decrease: new Image(),
+        move: new Image(),
+        hp: new Image(),
       };
 
       skillImages.chance.src = "./picture/Skill/attack/TwiceChance.jpg";
       skillImages.big.src = "./picture/Skill/attack/BigBomb.jpg";
       skillImages.damage.src = "./picture/Skill/attack/StrongBomb.jpg";
       skillImages.area.src = "./picture/Skill/attack/IncreaseTank.jpg";
+      skillImages.small.src = "./picture/Skill/defense/SmallBomb.jpg"; // SmallBomb skill image
+      skillImages.decrease.src = "./picture/Skill/defense/DecreaseTank.jpg"; // DecreaseTank skill image
+      skillImages.move.src = "./picture/Skill/defense/IncreaseMovement.jpg"; // IncreaseMovement skill image
+      skillImages.hp.src = "./picture/Skill/defense/IncreaseHP.jpg"; // IncreaseHP skill image
 
       const tank1BodyImg = new Image();
       tank1BodyImg.src = tank1Images[selectedTank1];
@@ -152,10 +171,10 @@
 
       const tankSkills = {
         Tank1: {
-          skills: ["big", "area", "chance"],
+          skills: ["small", "decrease", "move"],
         },
         Tank2: {
-          skills: ["area", "chance", "damage"],
+          skills: ["hp", "chance", "damage"],
         },
         Tank3: {
           skills: ["big", "area", "damage"],
@@ -195,6 +214,7 @@
       let cannon1Angle = Math.PI / 4;
       let tank1LeftPressed = false;
       let tank1RightPressed = false;
+      let tank1MoveDistance = 0;
 
       // Player 2
       let tank2X = width - tankWidth;
@@ -203,6 +223,7 @@
       let cannon2Angle = (3 * Math.PI) / 4;
       let tank2LeftPressed = false;
       let tank2RightPressed = false;
+      let tank2MoveDistance = 0;
 
       let missileRadius = defaultMissileRadius;
       let missileX;
@@ -235,24 +256,38 @@
         tank2CenterX = tank2X + 0.5 * tankWidth * player2Tank.sizeMultiplier;
         tank2CenterY = height - 0.5 * tankHeight * player2Tank.sizeMultiplier;
 
-        if (tank1LeftPressed && tank1X > 0) {
+        if (
+          tank1LeftPressed &&
+          tank1X > 0 &&
+          tank1MoveDistance < maxMoveDistance
+        ) {
           tank1X -= tankDx;
+          tank1MoveDistance += tankDx;
         }
         if (
           tank1RightPressed &&
-          tank1X + tankWidth * player1Tank.sizeMultiplier < width
+          tank1X + tankWidth * player1Tank.sizeMultiplier < width &&
+          tank1MoveDistance < maxMoveDistance
         ) {
           tank1X += tankDx;
+          tank1MoveDistance += tankDx;
         }
 
-        if (tank2LeftPressed && tank2X > 0) {
+        if (
+          tank2LeftPressed &&
+          tank2X > 0 &&
+          tank2MoveDistance < maxMoveDistance
+        ) {
           tank2X -= tankDx;
+          tank2MoveDistance += tankDx;
         }
         if (
           tank2RightPressed &&
-          tank2X + tankWidth * player2Tank.sizeMultiplier < width
+          tank2X + tankWidth * player2Tank.sizeMultiplier < width &&
+          tank2MoveDistance < maxMoveDistance
         ) {
           tank2X += tankDx;
+          tank2MoveDistance += tankDx;
         }
 
         if (isCharging && !isFired) {
@@ -454,6 +489,9 @@
         isFired = false;
         isCharging = false;
         gauge = Math.PI;
+        tank1MoveDistance = 0; // Reset move distance for Player 1
+        tank2MoveDistance = 0; // Reset move distance for Player 2
+
         resetKeys();
         resetMultipliers();
         shotsFired = 0;
@@ -578,6 +616,7 @@
         const skills = tank.skills.slice(0, 3); // 3개의 칸만 표시
         const itemSize = 60; // 아이템 크기를 2배로 증가
         const itemSpacing = 10; // 아이템 사이의 간격
+
         skills.forEach((skill, index) => {
           const x = startX + index * (itemSize + itemSpacing);
           const y = startY;

@@ -28,7 +28,7 @@
         background: #333;
         border: 2px solid #fff;
         border-radius: 10px;
-        padding: 10px 20px;
+        padding: 1px 20px;
         color: #fff;
         font-family: "Arial", sans-serif;
         font-size: 24px;
@@ -42,11 +42,11 @@
         margin-bottom: 5px;
       }
       .score {
-        font-size: 48px;
+        font-size: 70px;
         font-weight: bold;
-        background: red;
+        background: #333;
         border-radius: 5px;
-        padding: 5px 10px;
+        padding: 0px 0px;
       }
       .colon {
         font-size: 48px;
@@ -79,6 +79,9 @@
       const height = canvas.height;
       var backgroundImage = new Image();
       backgroundImage.src = "./picture/BackGround/main.jpg";
+
+      var TargetImage = new Image();
+      TargetImage.src = "./picture/TargetImage.jpg";
 
       let intervalId;
 
@@ -137,7 +140,7 @@
       const tankDx = 3;
       const cannonAngleDIF = Math.PI / 60;
       const cannonLength = 100 * Math.sqrt(2);
-      const maxMoveDistance = 1000;
+      const maxMoveDistance = 300;
 
       const tank1Images = {
         Tank1: "./picture/Tank/pinkTank.png",
@@ -275,8 +278,8 @@
       let targetRadius = 40; // 기본 타겟의 반경
 
       const generateTarget = () => {
-        targetWidth = (Math.random() * 50 + 20) * 1.5; // Width between 40 and 140
-        targetHeight = (Math.random() * 50 + 20) * 1.5; // Height between 40 and 140
+        targetWidth = 80 + Math.random() * 100; // Width between 40 and 140
+        targetHeight = targetWidth; // Height between 40 and 140
         targetX = Math.random() * (width - targetWidth);
         targetY = Math.random() * (height / 3.5) + height / 4; // Y position around the middle of the canvas
       };
@@ -380,10 +383,10 @@
 
         // Target 명중
         if (
-          missileX >= targetX - 20 &&
-          missileX <= targetX + targetWidth + 20 &&
-          missileY >= targetY - 20 &&
-          missileY <= targetY + targetHeight + 20
+          missileX >= targetX &&
+          missileX <= targetX + targetWidth &&
+          missileY >= targetY &&
+          missileY <= targetY + targetHeight
         ) {
           targetHit.play();
           if (currentPlayer === 1) {
@@ -495,9 +498,7 @@
 
       const drawTarget = () => {
         ctx.beginPath();
-        ctx.rect(targetX, targetY, targetWidth, targetHeight);
-        ctx.fillStyle = "red";
-        ctx.fill();
+        ctx.drawImage(TargetImage, targetX, targetY, targetWidth, targetHeight);
         ctx.closePath();
       };
 
@@ -511,14 +512,17 @@
           for (let i = 0; i < playerTank.skills.length; i++) {
             const skill = playerTank.skills[i];
             const skillKey = playerTank.skillKeys[i];
-            ctx.drawImage(skillImages[skill], startX + i * 60, startY, 50, 50);
+            ctx.drawImage(
+              skillImages[skill],
+              startX + i * 80 - 40,
+              startY + 10,
+              70,
+              70
+            );
             if (playerTank.usedSkills[skill]) {
               ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
               ctx.fillRect(startX + i * 60, startY, 50, 50);
             }
-            ctx.fillStyle = "white";
-            ctx.font = "16px Arial";
-            ctx.fillText(skillKey, startX + i * 60 + 20, startY + 70);
           }
         }
       };
