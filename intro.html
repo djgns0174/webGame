@@ -48,9 +48,28 @@
             var clickSound = new Audio("./sound/click.mp3"); // 효과음 파일 경로를 설정하세요
 
             // 배경음악 로드
-            var bgMusic = new Audio("./sounds/background.mp3"); // 배경음악 파일 경로를 설정하세요
-            bgMusic.loop = true; // 배경음악 반복 재생
-            bgMusic.play(); // 배경음악 재생
+            // document.addEventListener("DOMContentLoaded", (event) => {
+            //   var bgMusic = new Audio("./sound/bgm/base.mp3");
+            //   bgMusic.loop = true;
+            //   bgMusic.currentTime = 0;
+
+            //   document.addEventListener("keydown", (event) => {
+            //     if (event.keyCode === "ArrowRight" || event.keyCode === " ") {
+            //       bgMusic.play();
+            //     }
+            //   });
+            // });
+            document.addEventListener("DOMContentLoaded", (event) => {
+              var bgMusic = new Audio("./sound/bgm/base.mp3");
+              bgMusic.loop = true;
+              bgMusic.currentTime = 0;
+
+              document.addEventListener("click", () => {
+                bgMusic.play().catch((error) => {
+                  console.log("재생 실패:", error);
+                });
+              });
+            });
 
             // 버튼 스타일
             function drawButton(x, y, width, height, radius, text, isPressed) {

@@ -77,8 +77,8 @@ big : 본인 포탄 크기 증가
    - [ ] 5.2 manual_mode.html - target mode (target 모드의 개념)
    - [ ] 5.3 select_tank(easy_battle).html (스킬 설명) - target mode랑 스킬 조금 다름
    - [ ] 5.4 select_tank(easy_target).html (스킬 설명) - battle mode랑 스킬 조금 다름
-   - [ ] 5.5 select_tank(easy_battle).html (스킬 설명)
-   - [ ] 5.6 select_tank(easy_battle).html (스킬 설명)
+   - [ ] 5.5 select_tank(hard_battle).html (스킬 설명)
+   - [ ] 5.6 select_tank(hard_target).html (스킬 설명)
 
 6. UX 및 버그 잡기
    - [ ] 5.1 유지보수
