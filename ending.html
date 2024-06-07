@@ -45,6 +45,30 @@
             var background = new Image();
             background.src = "./picture/BackGround/ending.jpg"; // 이미지 URL을 설정하세요
 
+            var pinkTank = new Image();
+            pinkTank.src = "./picture/Tank/pinkTank.png";
+
+            var blueTank = new Image();
+            blueTank.src = "./picture/Tank/blueTank.png";
+
+            var greenTank = new Image();
+            greenTank.src = "./picture/Tank/greenTank.png";
+
+            var brownTank = new Image();
+            brownTank.src = "./picture/Tank/brownTank.png";
+
+            var pinkTank2 = new Image();
+            pinkTank2.src = "./picture/Tank/pinkTank2.png";
+
+            var blueTank2 = new Image();
+            blueTank2.src = "./picture/Tank/blueTank2.png";
+
+            var greenTank2 = new Image();
+            greenTank2.src = "./picture/Tank/greenTank2.png";
+
+            var brownTank2 = new Image();
+            brownTank2.src = "./picture/Tank/brownTank2.png";
+
             // 효과음 로드
             var clickSound = new Audio("./sound/click.mp3"); // 효과음 파일 경로를 설정하세요
 
@@ -61,6 +85,7 @@
             const buttonFadeInSpeed = 1;
             let isBackgroundFullyVisible = false;
             let showVideo = false;
+            let isAnimatingTank = false;
 
             function drawButton(x, y, width, height, text, isPressed) {
               // 버튼 배경
@@ -78,17 +103,97 @@
               ctx.fillText(text, x + width / 2, y + height / 2);
             }
 
+            function drawTank(tankImage, x, y, angle) {
+              ctx.save();
+              ctx.translate(x + 150, y + 150);
+              ctx.rotate(angle);
+              ctx.drawImage(tankImage, -150, -150, 300, 300);
+              ctx.restore();
+            }
+
+            function animateTank(tankImage, direction) {
+              let x = direction === "left" ? -300 : canvas.width;
+              let y = canvas.height - 300;
+              const danceStep = 5;
+              const danceRange = 20;
+              let moveDirection = direction === "left" ? 1 : -1;
+              let danceDirection = 1;
+              let upDownDirection = 1;
+              let angle = 0;
+              const rotationSpeed = Math.PI / 18;
+
+              function step() {
+                if (isAnimatingTank) {
+                  ctx.clearRect(0, 0, canvas.width, canvas.height);
+                  draw();
+                  drawTank(tankImage, x, y, angle);
+
+                  x += 5 * moveDirection;
+                  if (
+                    (direction === "left" && x > canvas.width / 2 - 150) ||
+                    (direction === "right" && x < canvas.width / 2 - 150)
+                  ) {
+                    x = canvas.width / 2 - 150;
+                    isAnimatingTank = false;
+                    setInterval(function () {
+                      x += danceStep * danceDirection;
+                      y += danceRange * upDownDirection;
+                      danceDirection *= -1;
+                      upDownDirection *= -1;
+                      angle += rotationSpeed;
+                      drawTank(tankImage, x, y, angle);
+                    }, 100);
+                  } else {
+                    requestAnimationFrame(step);
+                  }
+                }
+              }
+              requestAnimationFrame(step);
+            }
+
             function draw() {
               ctx.clearRect(0, 0, canvas.width, canvas.height);
               ctx.globalAlpha = alpha;
               ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+              const winnerplayer = localStorage.getItem("winnerplayer");
+              const winnertank = localStorage.getItem("winnertank");
+              console.log("Winner Player:", winnerplayer); // Log the value of winnertank
+              console.log("Winner Tank:", winnertank); // Log the value of winnertank
 
-              const winner = localStorage.getItem("winner");
-              if (winner) {
+              if (winnerplayer && winnertank) {
                 ctx.fillStyle = "black";
                 ctx.font = "60px 'MyFont'";
                 ctx.textAlign = "center";
-                ctx.fillText(`Winner is ${winner}`, canvas.width / 2, 100);
+                ctx.fillText(
+                  `Winner is ${winnerplayer}`,
+                  canvas.width / 2,
+                  100
+                );
+
+                if (!isAnimatingTank) {
+                  isAnimatingTank = true;
+                  const direction =
+                    winnerplayer === "player1" ? "left" : "right";
+                  if (winnerplayer === "player1") {
+                    if (winnertank === "Tank1")
+                      animateTank(pinkTank, direction);
+                    else if (winnertank === "Tank2")
+                      animateTank(blueTank, direction);
+                    else if (winnertank === "Tank3")
+                      animateTank(greenTank, direction);
+                    else if (winnertank === "Tank4")
+                      animateTank(brownTank, direction);
+                  } else if (winnerplayer === "player2") {
+                    if (winnertank === "Tank1")
+                      animateTank(pinkTank2, direction);
+                    else if (winnertank === "Tank2")
+                      animateTank(blueTank2, direction);
+                    else if (winnertank === "Tank3")
+                      animateTank(greenTank2, direction);
+                    else if (winnertank === "Tank4")
+                      animateTank(brownTank2, direction);
+                  }
+                }
               }
 
               if (showRestartButton) {
@@ -103,10 +208,10 @@
               if (showVideo) {
                 ctx.drawImage(
                   video,
-                  canvas.width / 2 - 400,
-                  canvas.height / 2 - 225,
-                  800,
-                  450
+                  canvas.width / 2 - 500,
+                  canvas.height / 2 - 300,
+                  1000,
+                  600
                 );
               }
             }

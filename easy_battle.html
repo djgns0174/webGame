@@ -19,6 +19,12 @@
     </style>
   </head>
   <body>
+    <audio
+      id="background-music"
+      src="sound/bgm/main_game_page.mp3"
+      autoplay
+      loop
+    ></audio>
     <canvas id="fortress" width="2000" height="900"></canvas>
     <script>
       const canvas = document.getElementById("fortress");
@@ -179,16 +185,16 @@
 
       const tankSkills = {
         Tank1: {
-          skills: ["small", "decrease", "move"],
+          skills: ["big", "hp", "damage"],
         },
         Tank2: {
-          skills: ["hp", "chance", "damage"],
+          skills: ["area", "chance", "move"],
         },
         Tank3: {
-          skills: ["big", "area", "damage"],
+          skills: ["big", "area", "chance"],
         },
         Tank4: {
-          skills: ["chance", "damage", "big"],
+          skills: ["hp", "decrease", "small"],
         },
       };
       const playerKey = {
@@ -251,6 +257,7 @@
       let currentPlayer = 1; // 1: Player 1, 2: Player 2
       let currentPlayerShots = 1; // 기본 1회 공격
       let shotsFired = 0;
+      let skillUsed = false; // 한 턴에 하나의 스킬만 사용하도록 플래그 추가
 
       const draw = () => {
         ctx.clearRect(0, 0, width, height);
@@ -438,9 +445,10 @@
           if (player1Tank.health <= 0) {
             TankDead.play();
             setTimeout(() => {
-              window.location.href = "ending.html"; // 게임 종료 후 ending.html로 이동
               const winner = "player2";
-              localStorage.setItem("winner", winner);
+              localStorage.setItem("winnerplayer", winner);
+              localStorage.setItem("winnertank", selectedTank2);
+              window.location.href = "ending.html"; // 게임 종료 후 ending.html로 이동
             }, 800);
           } else {
             handleMissileEnd();
@@ -473,9 +481,10 @@
           if (player2Tank.health <= 0) {
             TankDead.play();
             setTimeout(() => {
-              window.location.href = "ending.html"; // 게임 종료 후 ending.html로 이동
               const winner = "player1";
-              localStorage.setItem("winner", winner);
+              localStorage.setItem("winnerplayer", winner);
+              localStorage.setItem("winnertank", selectedTank1);
+              window.location.href = "ending.html"; // 게임 종료 후 ending.html로 이동
             }, 800);
           } else {
             handleMissileEnd();
@@ -517,6 +526,7 @@
         resetMultipliers();
         shotsFired = 0;
         currentPlayerShots = 1;
+        skillUsed = false; // 스킬 사용 여부 초기화
       };
 
       const resetKeys = () => {
@@ -717,8 +727,9 @@
 
         if (key === " ") {
           if (!isFired) isCharging = true;
-        } else if (currentTank.skillKeys.includes(key)) {
+        } else if (currentTank.skillKeys.includes(key) && !skillUsed) {
           useSkillByKey(currentTank, opponentTank, key);
+          skillUsed = true; // 스킬 사용 후 플래그 설정
         }
       };
 

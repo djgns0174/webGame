@@ -58,6 +58,12 @@
     </style>
   </head>
   <body>
+    <audio
+      id="background-music"
+      src="sound/bgm/main_game_page.mp3"
+      autoplay
+      loop
+    ></audio>
     <div class="scoreboard">
       <div class="team">
         <div id="score1" class="score">
@@ -216,6 +222,7 @@
           missileRadiusMultiplier: 1,
           increasedRange: false,
           sizeMultiplier: 1,
+          skillUsedThisTurn: false, // Add this property
         };
       }
 
@@ -230,6 +237,7 @@
           missileRadiusMultiplier: 1,
           increasedRange: false,
           sizeMultiplier: 1,
+          skillUsedThisTurn: false, // Add this property
         };
       }
 
@@ -397,8 +405,18 @@
           isFired = false;
           generateTarget();
           currentPlayerShots--;
-          if (player1Score >= 50 || player2Score >= 50) {
+          if (player1Score >= 50) {
             setTimeout(() => {
+              const winner = "player1";
+              localStorage.setItem("winnerplayer", winner);
+              localStorage.setItem("winnertank", selectedTank1);
+              window.location.href = "ending.html";
+            }, 1000);
+          } else if (player2Score >= 50) {
+            setTimeout(() => {
+              const winner = "player2";
+              localStorage.setItem("winnerplayer", winner);
+              localStorage.setItem("winnertank", selectedTank2);
               window.location.href = "ending.html";
             }, 1000);
           }
@@ -422,6 +440,8 @@
         player2Tank.damageMultiplier = 1; // Reset damage multiplier
         player1Tank.doubleAttack = false; // Reset double attack
         player2Tank.doubleAttack = false; // Reset double attack
+        player1Tank.skillUsedThisTurn = false; // Reset skill usage for Player 1
+        player2Tank.skillUsedThisTurn = false; // Reset skill usage for Player 2
         currentPlayerShots = 1; // Reset the number of shots
       };
 
@@ -547,16 +567,20 @@
 
       const useSkill = (tank, skill) => {
         tank.usedSkills[skill] = true;
+        tank.skillUsedThisTurn = true; // Set the skill used flag
       };
 
       const useSkillByKey = (currentTank, opponentTank, key) => {
-        const skillIndex = currentTank.skillKeys.indexOf(key);
-        const skill = currentTank.skills[skillIndex];
-        if (!currentTank.usedSkills[skill]) {
-          applySkill(currentTank, opponentTank, skill);
-          useSkill(currentTank, skill);
-          ClickSkill.currentTime = 0;
-          ClickSkill.play(); // 스킬 사용 클릭 소리 재생
+        if (!currentTank.skillUsedThisTurn) {
+          // Check if a skill has already been used this turn
+          const skillIndex = currentTank.skillKeys.indexOf(key);
+          const skill = currentTank.skills[skillIndex];
+          if (!currentTank.usedSkills[skill]) {
+            applySkill(currentTank, opponentTank, skill);
+            useSkill(currentTank, skill);
+            ClickSkill.currentTime = 0;
+            ClickSkill.play(); // 스킬 사용 클릭 소리 재생
+          }
         }
       };
 

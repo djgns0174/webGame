@@ -28,6 +28,12 @@
     </style>
   </head>
   <body>
+    <audio
+      id="background-music"
+      src="sound/bgm/select_mode.mp3"
+      autoplay
+      loop
+    ></audio>
     <canvas id="gameCanvas" width="2000" height="900"></canvas>
     <script>
       window.onload = function () {
@@ -54,6 +60,11 @@
               ctx.strokeStyle = "#000";
               ctx.lineWidth = 4;
               ctx.stroke();
+
+              canvas.addEventListener("click", function () {
+                bgm_select_mode.volume = 0.4;
+                bgm_select_mode.play();
+              });
 
               // 버튼 텍스트
               ctx.fillStyle = "#EEE8AA";

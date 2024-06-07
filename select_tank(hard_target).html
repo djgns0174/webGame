@@ -21,13 +21,75 @@
         align-items: center;
         background-color: white;
       }
+
       #gameCanvas {
         border: 1px solid black;
         display: block;
       }
+
+      #console {
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        display: none;
+        text-align: center;
+        width: 300px;
+        height: 100px;
+      }
+
+      #console img {
+        width: 85px;
+        height: 85px;
+        margin: 0 5px;
+      }
+
+      #skills-console {
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 100px;
+        border-radius: 10px;
+        display: none;
+        width: 20%;
+        height: 35%;
+        text-align: center;
+      }
+
+      #close-button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        color: black;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
+    <audio
+      id="background-music"
+      src="sound/bgm/select_character.mp3"
+      autoplay
+      loop
+    ></audio>
+    <div id="console">
+      <div>
+        <img id="console-image1" src="" />
+        <img id="console-image2" src="" />
+        <img id="console-image3" src="" />
+      </div>
+    </div>
+    <div id="skills-console">
+      <div>
+        <img src="picture/manual/targetmode.png" />
+      </div>
+      <button id="close-button">Close</button>
+    </div>
+
     <canvas id="gameCanvas" width="2000" height="900"></canvas>
     <script>
       window.onload = function () {
@@ -42,7 +104,6 @@
             var background = new Image();
             background.src = "./picture/BackGround/intro.jpg";
 
-            // 효과음 로드 (전역 변수로 선언)
             var clickSound = new Audio("./sound/click.mp3");
 
             var tankImages = [
@@ -56,6 +117,29 @@
             tankImages[1].src = "./picture/Tank/blueTank.png";
             tankImages[2].src = "./picture/Tank/greenTank.png";
             tankImages[3].src = "./picture/Tank/brownTank.png";
+
+            var tankHoverImages = [
+              [
+                "./picture/Skill/attack/BigBomb.jpg",
+                "./picture/Skill/attack/IncreaseTank.jpg",
+                "./picture/Skill/attack/TwiceChance.jpg",
+              ],
+              [
+                "./picture/Skill/attack/IncreaseTank.jpg",
+                "./picture/Skill/attack/TwiceChance.jpg",
+                "./picture/Skill/attack/StrongBomb.jpg",
+              ],
+              [
+                "./picture/Skill/attack/BigBomb.jpg",
+                "./picture/Skill/attack/IncreaseTank.jpg",
+                "./picture/Skill/attack/StrongBomb.jpg",
+              ],
+              [
+                "./picture/Skill/attack/TwiceChance.jpg",
+                "./picture/Skill/attack/StrongBomb.jpg",
+                "./picture/Skill/attack/BigBomb.jpg",
+              ],
+            ];
 
             function drawButton(x, y, width, height, radius, text, isPressed) {
               ctx.fillStyle = isPressed ? "#A0522D" : "#8B0000";
@@ -107,7 +191,6 @@
               ctx.lineWidth = 4;
               ctx.stroke();
 
-              // 이미지 비율 유지하여 그리기
               var imgWidth = tankImage.width;
               var imgHeight = tankImage.height;
               var scale = Math.min(
@@ -204,6 +287,7 @@
                 selectedTank2 === "Tank4"
               );
 
+              drawButton(800, 400, 400, 80, 0, "Skills", false);
               drawButton(800, 500, 400, 80, 0, "Start", false);
             }
 
@@ -220,41 +304,130 @@
               clickSound.play();
             }
 
+            function showConsole(x, y, images, isLeft) {
+              var console = document.getElementById("console");
+              var consoleImage1 = document.getElementById("console-image1");
+              var consoleImage2 = document.getElementById("console-image2");
+              var consoleImage3 = document.getElementById("console-image3");
+              consoleImage1.src = images[0];
+              consoleImage2.src = images[1];
+              consoleImage3.src = images[2];
+              if (x > 800 && x < 1200) {
+                console.style.left = x + "px"; // 탱크 버튼의 오른쪽에 위치
+              } else if (isLeft) {
+                console.style.left = x - 320 + "px"; // 탱크 버튼의 왼쪽에 위치
+              } else {
+                console.style.left = x + 320 + "px"; // 탱크 버튼의 오른쪽에 위치
+              }
+              console.style.top = y + "px";
+              console.style.display = "block";
+            }
+
+            function hideConsole() {
+              document.getElementById("console").style.display = "none";
+            }
+
+            function showSkillsConsole(x, y) {
+              var console = document.getElementById("skills-console");
+              console.style.left = "50%";
+              console.style.top = "50%";
+              console.style.display = "block";
+            }
+
+            function hideSkillsConsole() {
+              document.getElementById("skills-console").style.display = "none";
+            }
+
             canvas.addEventListener("mousedown", function (event) {
               var x = event.pageX - canvas.offsetLeft;
               var y = event.pageY - canvas.offsetTop;
 
               if (x > 300 && x < 600) {
-                if (y > 100 && y < 180)
+                if (y > 100 && y < 180) {
+                  playClickSound();
                   selectedTank1 = selectedTank1 === "Tank1" ? null : "Tank1";
-                if (y > 200 && y < 280)
+                }
+                if (y > 200 && y < 280) {
+                  playClickSound();
                   selectedTank1 = selectedTank1 === "Tank2" ? null : "Tank2";
-                if (y > 300 && y < 380)
+                }
+                if (y > 300 && y < 380) {
+                  playClickSound();
                   selectedTank1 = selectedTank1 === "Tank3" ? null : "Tank3";
-                if (y > 400 && y < 480)
+                }
+                if (y > 400 && y < 480) {
+                  playClickSound();
                   selectedTank1 = selectedTank1 === "Tank4" ? null : "Tank4";
-                playClickSound(); // 효과음 재생
+                }
               }
 
               if (x > 1400 && x < 1700) {
-                if (y > 100 && y < 180)
+                if (y > 100 && y < 180) {
+                  playClickSound();
                   selectedTank2 = selectedTank2 === "Tank1" ? null : "Tank1";
-                if (y > 200 && y < 280)
+                }
+                if (y > 200 && y < 280) {
+                  playClickSound();
                   selectedTank2 = selectedTank2 === "Tank2" ? null : "Tank2";
-                if (y > 300 && y < 380)
+                }
+                if (y > 300 && y < 380) {
+                  playClickSound();
                   selectedTank2 = selectedTank2 === "Tank3" ? null : "Tank3";
-                if (y > 400 && y < 480)
+                }
+                if (y > 400 && y < 480) {
+                  playClickSound();
                   selectedTank2 = selectedTank2 === "Tank4" ? null : "Tank4";
-                playClickSound(); // 효과음 재생
+                }
               }
 
-              if (x > 800 && x < 1200 && y > 500 && y < 580) {
-                localStorage.setItem("user1", selectedTank1);
-                localStorage.setItem("user2", selectedTank2);
-                window.location.href = "hard_target.html";
+              if (x > 800 && x < 1200) {
+                if (y > 500 && y < 580) {
+                  localStorage.setItem("user1", selectedTank1);
+                  localStorage.setItem("user2", selectedTank2);
+                  playClickSound();
+                  window.location.href = "hard_target.html";
+                } else if (y > 400 && y < 480) {
+                  playClickSound();
+                  showSkillsConsole(x, y);
+                }
               }
 
               redrawScreen();
+            });
+
+            document
+              .getElementById("close-button")
+              .addEventListener("click", function () {
+                hideSkillsConsole();
+              });
+
+            canvas.addEventListener("mousemove", function (event) {
+              var x = event.pageX - canvas.offsetLeft;
+              var y = event.pageY - canvas.offsetTop;
+
+              if (x > 300 && x < 600) {
+                if (y > 100 && y < 180)
+                  showConsole(x, 100, tankHoverImages[0], true);
+                else if (y > 200 && y < 280)
+                  showConsole(x, 200, tankHoverImages[1], true);
+                else if (y > 300 && y < 380)
+                  showConsole(x, 300, tankHoverImages[2], true);
+                else if (y > 400 && y < 480)
+                  showConsole(x, 400, tankHoverImages[3], true);
+                else hideConsole();
+              } else if (x > 1400 && x < 1700) {
+                if (y > 100 && y < 180)
+                  showConsole(x, 100, tankHoverImages[0], false);
+                else if (y > 200 && y < 280)
+                  showConsole(x, 200, tankHoverImages[1], false);
+                else if (y > 300 && y < 380)
+                  showConsole(x, 300, tankHoverImages[2], false);
+                else if (y > 400 && y < 480)
+                  showConsole(x, 400, tankHoverImages[3], false);
+                else hideConsole();
+              } else {
+                hideConsole();
+              }
             });
           })
           .catch(function (error) {

@@ -28,7 +28,8 @@
     </style>
   </head>
   <body>
-    <canvas id="gameCanvas" width="2000" height="900"></canvas>
+    <audio id="intro-bgm" src="sound/bgm/base.mp3" autoplay loop></audio
+    ><canvas id="gameCanvas" width="2000" height="900"></canvas>
     <script>
       window.onload = function () {
         var canvas = document.getElementById("gameCanvas");
@@ -59,17 +60,6 @@
             //     }
             //   });
             // });
-            document.addEventListener("DOMContentLoaded", (event) => {
-              var bgMusic = new Audio("./sound/bgm/base.mp3");
-              bgMusic.loop = true;
-              bgMusic.currentTime = 0;
-
-              document.addEventListener("click", () => {
-                bgMusic.play().catch((error) => {
-                  console.log("재생 실패:", error);
-                });
-              });
-            });
 
             // 버튼 스타일
             function drawButton(x, y, width, height, radius, text, isPressed) {
