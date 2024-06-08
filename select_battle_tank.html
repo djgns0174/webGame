@@ -54,8 +54,8 @@
         padding: 100px;
         border-radius: 10px;
         display: none;
-        width: 20%;
-        height: 35%;
+        width: 40%;
+        height: 37%;
         text-align: center;
       }
 
@@ -69,13 +69,13 @@
       }
     </style>
   </head>
+  <audio
+    id="background-music"
+    src="sound/bgm/select_character.mp3"
+    autoplay
+    loop
+  ></audio>
   <body>
-    <audio
-      id="background-music"
-      src="sound/bgm/select_character.mp3"
-      autoplay
-      loop
-    ></audio>
     <div id="console">
       <div>
         <img id="console-image1" src="" />
@@ -85,7 +85,7 @@
     </div>
     <div id="skills-console">
       <div>
-        <img src="picture/manual/targetmode.png" />
+        <img src="picture/manual/battlemode.png" />
       </div>
       <button id="close-button">Close</button>
     </div>
@@ -121,23 +121,23 @@
             var tankHoverImages = [
               [
                 "./picture/Skill/attack/BigBomb.jpg",
-                "./picture/Skill/attack/IncreaseTank.jpg",
-                "./picture/Skill/attack/TwiceChance.jpg",
+                "./picture/Skill/defense/IncreaseHP.jpg",
+                "./picture/Skill/attack/StrongBomb.jpg",
               ],
               [
                 "./picture/Skill/attack/IncreaseTank.jpg",
                 "./picture/Skill/attack/TwiceChance.jpg",
-                "./picture/Skill/attack/StrongBomb.jpg",
+                "./picture/Skill/defense/IncreaseMovement.jpg",
               ],
               [
                 "./picture/Skill/attack/BigBomb.jpg",
                 "./picture/Skill/attack/IncreaseTank.jpg",
-                "./picture/Skill/attack/StrongBomb.jpg",
+                "./picture/Skill/attack/TwiceChance.jpg",
               ],
               [
-                "./picture/Skill/attack/TwiceChance.jpg",
-                "./picture/Skill/attack/StrongBomb.jpg",
-                "./picture/Skill/attack/BigBomb.jpg",
+                "./picture/Skill/defense/IncreaseHP.jpg",
+                "./picture/Skill/defense/DecreaseTank.jpg",
+                "./picture/Skill/defense/SmallBomb.jpg",
               ],
             ];
 
@@ -385,7 +385,7 @@
                   localStorage.setItem("user1", selectedTank1);
                   localStorage.setItem("user2", selectedTank2);
                   playClickSound();
-                  window.location.href = "easy_target.html";
+                  window.location.href = "game_battle.html";
                 } else if (y > 400 && y < 480) {
                   playClickSound();
                   showSkillsConsole(x, y);

@@ -46,6 +46,10 @@
         border-radius: 5px;
         cursor: pointer;
       }
+      .infoDialog img {
+        height: 600px;
+        width: 1200px;
+      }
     </style>
   </head>
   <body>
@@ -58,22 +62,12 @@
     <canvas id="gameCanvas" width="2000" height="900"></canvas>
 
     <div id="battleRuleDialog" class="infoDialog">
-      <h2>Battle Rule Info</h2>
-      <p>
-        Welcome to Fortress Duels: Dynamic Warfare! In this game, you will
-        engage in thrilling tank battles in a dynamic environment. Use strategy
-        and skill to outmaneuver your opponents and achieve victory!
-      </p>
+      <div><img src="picture/manual_battle.png" /></div>
       <button class="closeInfo">Close</button>
     </div>
 
     <div id="targetRuleDialog" class="infoDialog">
-      <h2>Target Rule Info</h2>
-      <p>
-        In the Target Rule mode, your goal is to accurately hit designated
-        targets within the time limit. Precision and timing are key to
-        maximizing your score!
-      </p>
+      <div><img src="picture/manual_target.png" /></div>
       <button class="closeInfo">Close</button>
     </div>
 

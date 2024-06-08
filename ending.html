@@ -86,6 +86,7 @@
             let isBackgroundFullyVisible = false;
             let showVideo = false;
             let isAnimatingTank = false;
+            let buttonYPosition = 600;
 
             function drawButton(x, y, width, height, text, isPressed) {
               // 버튼 배경
@@ -201,7 +202,7 @@
                   buttonAlpha += buttonFadeInSpeed;
                 }
                 ctx.globalAlpha = buttonAlpha;
-                drawButton(800, 600, 400, 80, "Restart", false);
+                drawButton(800, buttonYPosition, 400, 80, "Restart", false);
                 ctx.globalAlpha = 1.0; // 투명도 초기화
               }
 
@@ -242,13 +243,13 @@
                 showRestartButton &&
                 x > 800 &&
                 x < 1200 &&
-                y > 600 &&
-                y < 680
+                y > buttonYPosition &&
+                y < buttonYPosition + 80
               ) {
                 isRestartPressed = true;
                 clickSound.play(); // 효과음 재생
                 draw();
-                drawButton(800, 600, 400, 80, "Restart", true);
+                drawButton(800, buttonYPosition, 400, 80, "Restart", true);
               }
             });
 
@@ -262,8 +263,8 @@
                 isRestartPressed &&
                 x > 800 &&
                 x < 1200 &&
-                y > 600 &&
-                y < 680
+                y > buttonYPosition &&
+                y < buttonYPosition + 80
               ) {
                 window.location.href = "intro.html";
               }
@@ -271,7 +272,7 @@
               isRestartPressed = false;
               if (showRestartButton) {
                 draw();
-                drawButton(800, 600, 400, 80, "Restart", false);
+                drawButton(800, buttonYPosition, 400, 80, "Restart", false);
               }
             });
 
@@ -284,6 +285,7 @@
             canvas.addEventListener("dblclick", function () {
               if (!isBackgroundFullyVisible) return; // 배경이 완전히 나타나지 않았을 경우 무시
               showVideo = true;
+              buttonYPosition = 750; // 비디오가 나오면 버튼 위치 변경
               video.play();
               draw();
             });

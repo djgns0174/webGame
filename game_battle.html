@@ -31,6 +31,10 @@
       const ctx = canvas.getContext("2d");
       const width = canvas.width;
       const height = canvas.height;
+      const wall1X = 600; // 첫 번째 벽의 X 좌표
+      const wall2X = 1400; // 두 번째 벽의 X 좌표
+      const wallHeight = 200; // 벽의 높이
+
       var backgroundImage = new Image();
       backgroundImage.src = "./picture/BackGround/main.jpg";
 
@@ -263,6 +267,11 @@
         ctx.clearRect(0, 0, width, height);
         ctx.drawImage(backgroundImage, 0, 0, width, height); // 매 프레임마다 배경 이미지 그리기
 
+        // 보이지 않는 벽 그리기 (디버깅을 위해 임시로 보이게 설정)
+        ctx.fillStyle = "rgba(0, 0, 0, 1)";
+        ctx.fillRect(wall1X, height - wallHeight, 10, wallHeight);
+        ctx.fillRect(wall2X, height - wallHeight, 10, wallHeight);
+
         // 플레이어 상태 표시
         drawPlayerStatus();
 
@@ -277,8 +286,17 @@
           tank1MoveDistance <
             maxMoveDistance * player1Tank.moveDistanceMultiplier
         ) {
-          tank1X -= tankDx;
-          tank1MoveDistance += tankDx;
+          if (tank1X - tankDx >= wall1X && tank1X - tankDx <= wall1X + 10) {
+            tank1X = wall1X + 10; // 벽 충돌 시 이동 멈춤
+          } else if (
+            tank1X - tankDx >= wall2X &&
+            tank1X - tankDx <= wall2X + 10
+          ) {
+            tank1X = wall2X + 10; // 벽 충돌 시 이동 멈춤
+          } else {
+            tank1X -= tankDx;
+            tank1MoveDistance += tankDx;
+          }
         }
         if (
           tank1RightPressed &&
@@ -286,8 +304,20 @@
           tank1MoveDistance <
             maxMoveDistance * player1Tank.moveDistanceMultiplier
         ) {
-          tank1X += tankDx;
-          tank1MoveDistance += tankDx;
+          if (
+            tank1X + tankWidth + tankDx >= wall1X &&
+            tank1X + tankWidth + tankDx <= wall1X + 10
+          ) {
+            tank1X = wall1X - tankWidth; // 벽 충돌 시 이동 멈춤
+          } else if (
+            tank1X + tankWidth + tankDx >= wall2X &&
+            tank1X + tankWidth + tankDx <= wall2X + 10
+          ) {
+            tank1X = wall2X - tankWidth; // 벽 충돌 시 이동 멈춤
+          } else {
+            tank1X += tankDx;
+            tank1MoveDistance += tankDx;
+          }
         }
 
         if (
@@ -296,8 +326,17 @@
           tank2MoveDistance <
             maxMoveDistance * player2Tank.moveDistanceMultiplier
         ) {
-          tank2X -= tankDx;
-          tank2MoveDistance += tankDx;
+          if (tank2X - tankDx >= wall1X && tank2X - tankDx <= wall1X + 10) {
+            tank2X = wall1X + 10; // 벽 충돌 시 이동 멈춤
+          } else if (
+            tank2X - tankDx >= wall2X &&
+            tank2X - tankDx <= wall2X + 10
+          ) {
+            tank2X = wall2X + 10; // 벽 충돌 시 이동 멈춤
+          } else {
+            tank2X -= tankDx;
+            tank2MoveDistance += tankDx;
+          }
         }
         if (
           tank2RightPressed &&
@@ -305,8 +344,20 @@
           tank2MoveDistance <
             maxMoveDistance * player2Tank.moveDistanceMultiplier
         ) {
-          tank2X += tankDx;
-          tank2MoveDistance += tankDx;
+          if (
+            tank2X + tankWidth + tankDx >= wall1X &&
+            tank2X + tankWidth + tankDx <= wall1X + 10
+          ) {
+            tank2X = wall1X - tankWidth; // 벽 충돌 시 이동 멈춤
+          } else if (
+            tank2X + tankWidth + tankDx >= wall2X &&
+            tank2X + tankWidth + tankDx <= wall2X + 10
+          ) {
+            tank2X = wall2X - tankWidth; // 벽 충돌 시 이동 멈춤
+          } else {
+            tank2X += tankDx;
+            tank2MoveDistance += tankDx;
+          }
         }
 
         if (isCharging && !isFired) {
