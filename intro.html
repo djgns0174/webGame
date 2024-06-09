@@ -28,8 +28,8 @@
     </style>
   </head>
   <body>
-    <audio id="intro-bgm" src="sound/bgm/base.mp3" autoplay loop></audio
-    ><canvas id="gameCanvas" width="2000" height="900"></canvas>
+    <audio id="intro-bgm" src="sound/bgm/base.mp3" autoplay loop></audio>
+    <canvas id="gameCanvas" width="2000" height="900"></canvas>
     <script>
       window.onload = function () {
         var canvas = document.getElementById("gameCanvas");
@@ -43,10 +43,10 @@
 
             // 이미지 로드
             var background = new Image();
-            background.src = "./picture/BackGround/intro.jpg"; // 이미지 URL을 설정하세요
+            background.src = "./picture/BackGround/intro.jpg";
 
             // 효과음 로드
-            var clickSound = new Audio("./sound/click.mp3"); // 효과음 파일 경로를 설정하세요
+            var clickSound = new Audio("./sound/click.mp3");
 
             // 배경음악 로드
             // document.addEventListener("DOMContentLoaded", (event) => {
